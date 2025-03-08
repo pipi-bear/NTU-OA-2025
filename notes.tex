@@ -1,0 +1,149 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage[]{amsthm} 
+\usepackage[]{amssymb} 
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{mathtools}
+\usepackage[thinc]{esdiff}
+\usepackage[dvipsnames]{xcolor}
+\newtheorem*{theorem}{Theorem}
+
+\title{Optimization Algorithms: Notes}
+\author{Lo Chun, Chou \\ R13922136}
+\date\today
+
+\begin{document}
+\setlength{\parindent}{0pt}
+\maketitle 
+
+\section*{W3}
+
+\begin{equation*}
+    \begin{cases}
+        \text{Statistical Learning (Vapnik-Chervonenkis)} \\
+        \text{PAC Learning (Leslie Valiant)} \\
+        \text{Online learning} \rightarrow \text{Online to batch conversion}
+    \end{cases}
+\end{equation*}
+
+\subsection*{Statistical Learning $=$ Stochastic Optimization}
+
+\begin{itemize}
+    \item \textcolor{Green}{Machine Learning $=$ Decision making under uncertainty}
+\end{itemize}
+
+\begin{center}
+    \textbf{Description in class}
+\end{center}
+
+If we have data:
+
+\begin{itemize}
+    \item train data: $\{(x_1, y_1), (x_2, y_2), \cdots, (x_n, y_n)\}$  
+    \item test data: $(x_{n+1}, y_{n+1})$
+\end{itemize}
+
+If we calculate the risk function by:
+
+\begin{equation*}
+    R(h) = \lambda(h, (x_{n+1}, y_{n+1}))
+\end{equation*}
+
+This is a little bit far from the true risk value $R(h)$, 
+therefore we take the expected value:
+
+\begin{equation*}
+    R(h) = \mathsf{E}[\lambda(h, (x_{n+1}, y_{n+1}))]
+\end{equation*}
+
+\bigskip
+
+\begin{center}
+    \textbf{Description in slides}
+\end{center}
+
+Since we do not know what the test data is, 
+we cannot know the risk value $R(h)$ for each hypothesis $h \in \mathcal{H}$ directly, 
+therefore we cannot find the exact $h^\star \ \ni$
+
+\begin{equation*}
+    h^\star \in \arg\min_{h \in \mathcal{H}} R(h)
+\end{equation*}
+
+where the risk $R(h)$ is defined as:
+
+\begin{equation*}
+    R(h) = \mathsf{E}_z[\lambda(h, z)] \qquad \text{where } \lambda:\mathcal{H} \times \mathcal{Z} \rightarrow \mathbb{R} \text{ is the loss funciton}
+\end{equation*}
+
+Which means that the risk value $R(h)$ of a hypothesis $h$ is the expected loss.
+\bigskip
+
+\subsection*{Empirical Risk Minimization (ERM)}
+
+By law of large numbers, if $N$ is large enough, 
+the \textcolor{SeaGreen}{empirical risk $\hat{R}_N(h)$} is approximate to the true risk $R(h)$:
+
+\begin{equation*}
+    \hat{R}_N(h) \coloneqq \frac{1}{N} \sum_{n=1}^N \lambda(h, z_n) \approx R(h)
+\end{equation*}
+
+Therefore, we can approximate $h^\star$ in the original optimization problem by:
+
+\begin{align*}
+    \hat{h}_N \in \arg\min_{h \in \mathcal{H}} \hat{R}_N(h)
+\end{align*}
+
+Note that here we use $\in$ since there could be multiple $h$s that achieve the minimum empirical risk.
+
+If
+
+\begin{align*}
+    \mathbb{P}\{\delta = \delta_i\} \sim \frac{1}{n}
+\end{align*}
+
+then we have:
+
+\begin{align*}
+    \hat{R}_n(h) 
+    &= \sum_{i=1}^n \mathbb{P}\{\delta = \delta_i\} \cdot \lambda(h, \delta_i) \\
+    &= \frac{1}{n} \sum_{i=1}^n \lambda(h, \delta_i)
+\end{align*}
+
+If we don't know the probability distribution of the random variable,
+we can use numerical integration to estimate it.
+\bigskip
+
+\begin{center}
+    \textbf{How large is the statistical error $R(\hat{h}_N) - R(h^\star)$?}   
+\end{center}
+
+\textcolor{Red}{Check this part:}  
+
+$\rightarrow$ The difference between the empirical risk (avg. of sum of $N$ sample points' loss), and the expected loss over $\mathcal{Z}$)
+
+\begin{align*}
+    R(\hat{h}_N) - R(h^\star) 
+    &= R(\hat{h}_N) \ \textcolor{Green}{ + \hat{R}_N(\hat{h}_N) -\hat{R}_N(\hat{h}_N)} \ \textcolor{Orange}{ + \hat{R}_N(h^\star) -\hat{R}_N(h^\star)} - R(h^\star) \\
+    &= \textcolor{SeaGreen}{R(\hat{h}_N) - \hat{R}_N(\hat{h}_N)} + \hat{R}_N(\hat{h}_N) -\hat{R}_N(h^\star) + \textcolor{SeaGreen}{\hat{R}_N(h^\star) - R(h^\star)}
+\end{align*}
+
+Both part in seagreen color consists of $R$ and $\hat{R}_N$, with one using $\hat{h}_N$ and the other using $h^\star$.
+
+\textcolor{Red}
+{Check:
+    \begin{itemize}
+        \item pointwise convergence vs. uniform convergence
+        \item ULLN (Uniform law of large numbers)
+        \item Dadley integral
+    \end{itemize}
+}
+
+
+
+
+
+\end{document}

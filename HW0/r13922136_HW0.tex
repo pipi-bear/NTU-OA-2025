@@ -6,6 +6,8 @@
 \usepackage{amsmath}
 \usepackage{graphicx}
 \usepackage{hyperref}
+\usepackage{comment}
+\usepackage[dvipsnames]{xcolor}
 \usepackage[thinc]{esdiff}
 \newtheorem*{theorem}{Theorem}
 
@@ -152,8 +154,8 @@ Plugging back into $(*)$, we get:
             &= w_1 - \left( \nabla^2 g ( w_1 ) \right)^{-1} \nabla g ( w_1 ) \\
             &= 0 - \left( \frac{1}{n} X^\intercal X \right)^{-1} \left( - \frac{1}{n} X^\intercal y \right) \\
             &= 0 + n (X^\intercal X)^{-1} \frac{1}{n} X^\intercal y \\
-            &= (X^\intercal X)^{-1} X^\intercal y
-    \end{split} 
+            &= (X^\intercal X)^{-1} X^\intercal y 
+    \end{split} \tag{1}  
 \end{equation*}
 
 To show that $w_2 = w^\natural$, observe that $\nabla g(w^\natural) = 0$, using $(1)$ in the previous question, we have: 
@@ -172,15 +174,17 @@ Reorder and simplify the terms, we get:
     X^\intercal Xw^\natural = X^\intercal y
 \end{equation*}
 
+Since $rank(X) = d$, $rank(X^\intercal X) = rank(X) = d$, 
+$X^\intercal X \in \mathbb{R}^{d \times d}$ is of full rank
+and therefore invertible (and positive definite).
 
-Since we can only show that $X^\intercal X$ is positive semi-definite, 
-we cannot guarantee that the inverse $(X^\intercal X)^{-1}$ exists, 
-so we should take the Moore-Penrose pseudo-inverse, 
-which is uniquely defined for any matrix:
+Thus, we can write:
 
 \begin{equation*}
-    w^\natural = (X^\intercal X)^+ X^\intercal y
+    w^\natural = (X^\intercal X)^{-1} X^\intercal y
 \end{equation*}
+
+which is the same as $w_2$ in $(1)$. $\square$
 
 \section*{2}
 \subsection*{(1)}
@@ -196,7 +200,8 @@ We knew that the probability of $\mathsf{P} ( y_i = 0 )$ is:
 \begin{equation*}
     \begin{split}
         \mathsf{P} ( y_i = 0 ) 
-        &= \frac{1}{1 + \mathrm{e}^{\langle x_i, \theta^\natural \rangle}} \\
+        &= 1 - \mathsf{P} ( y_i = 1 ) \\
+        &= \frac{1 + \mathrm{e}^{- \langle x_i, \theta^\natural \rangle}}{1 + \mathrm{e}^{- \langle x_i, \theta^\natural \rangle}} - \frac{1}{1 + \mathrm{e}^{- \langle x_i, \theta^\natural \rangle}} \\
         &= \frac{\mathrm{e}^{-\langle x_i, \theta^\natural \rangle}}{1 + \mathrm{e}^{-\langle x_i, \theta^\natural \rangle}} 
     \end{split}
 \end{equation*}
@@ -204,7 +209,7 @@ We knew that the probability of $\mathsf{P} ( y_i = 0 )$ is:
 We can write the pmf of given $x_i, \theta^{\natural}$, observed $y_i$ as:
 
 \begin{equation*}
-    p(y_i | x_i, \theta^{\natural}) = \left( \frac{1}{1 + \mathrm{e}^{-\langle x_i, \theta^{\natural} \rangle}} \right)^{y_i} \left( \frac{\mathrm{e}^{-\langle x_i, \theta^{\natural} \rangle}}{1 + \mathrm{e}^{-\langle x_i, \theta^{\natural} \rangle}} \right)^{1 - y_i}
+    p(y_i | x_i, \theta^{\natural}) = \left( \frac{1}{1 + \mathrm{e}^{-\langle x_i, \theta^{\natural} \rangle}} \right)^{y_i} \left( \frac{\mathrm{e}^{-\langle x_i, \theta^{\natural} \rangle}}{1 + \mathrm{e}^{-\langle x_i, \theta^{\natural} \rangle}} \right)^{1 - 2y_i}
 \end{equation*}
 
 Using the pmf, we can get the likelihood function, which can be written as:
@@ -218,8 +223,8 @@ We can further derive the $\log$-likelihood:
 
 \begin{align*}
     \log l(\theta) 
-    &= \log \left[\prod_{i=1}^n \left( \frac{1}{1 + \mathrm{e}^{-\langle x_i, \theta \rangle}} \right)^{y_i} \left( \frac{\mathrm{e}^{-\langle x_i, \theta \rangle}}{1 + \mathrm{e}^{-\langle x_i, \theta \rangle}} \right)^{1 - y_i} \right] \\
-    &= \sum_{i=1}^n \left[ y_i \log \left( \frac{1}{1 + \mathrm{e}^{-\langle x_i, \theta \rangle}} \right) + (1 - y_i) \log \left( \frac{\mathrm{e}^{-\langle x_i, \theta \rangle}}{1 + \mathrm{e}^{-\langle x_i, \theta \rangle}} \right) \right] \tag{*}
+    &= \log \left[\prod_{i=1}^n \left( \frac{1}{1 + \mathrm{e}^{-\langle x_i, \theta \rangle}} \right)^{y_i} \left( \frac{\mathrm{e}^{-\langle x_i, \theta \rangle}}{1 + \mathrm{e}^{-\langle x_i, \theta \rangle}} \right)^{1 - 2y_i} \right] \\
+    &= \sum_{i=1}^n \left[ y_i \log \left( \frac{1}{1 + \mathrm{e}^{-\langle x_i, \theta \rangle}} \right) + (1 - 2y_i) \log \left( \frac{\mathrm{e}^{-\langle x_i, \theta \rangle}}{1 + \mathrm{e}^{-\langle x_i, \theta \rangle}} \right) \right] \tag{*}
 \end{align*}
 
 The terms in the above equation can be simplified:
@@ -234,9 +239,9 @@ The terms in the above equation can be simplified:
 
 \begin{equation*}
     \begin{split}
-        (1 - y_i) \log \left( \frac{\mathrm{e}^{-\langle x_i, \theta \rangle}}{1 + \mathrm{e}^{-\langle x_i, \theta \rangle}} \right) 
-        &= (1 - y_i) \log \left( \mathrm{e}^{-\langle x_i, \theta \rangle} \right) - (1 - y_i) \log \left( 1 + \mathrm{e}^{-\langle x_i, \theta \rangle} \right)\\
-        &= -\langle x_i, \theta \rangle(1 - y_i) - \log \left( 1 + \mathrm{e}^{-\langle x_i, \theta \rangle} \right) + y_i \log \left( 1 + \mathrm{e}^{-\langle x_i, \theta \rangle} \right)
+        (1 - 2y_i) \log \left( \frac{\mathrm{e}^{-\langle x_i, \theta \rangle}}{1 + \mathrm{e}^{-\langle x_i, \theta \rangle}} \right) 
+        &= (1 - 2y_i) \log \left( \mathrm{e}^{-\langle x_i, \theta \rangle} \right) - (1 - 2y_i) \log \left( 1 + \mathrm{e}^{-\langle x_i, \theta \rangle} \right)\\
+        &= -\langle x_i, \theta \rangle(1 - 2y_i) - \log \left( 1 + \mathrm{e}^{-\langle x_i, \theta \rangle} \right) + y_i \log \left( 1 + \mathrm{e}^{-\langle x_i, \theta \rangle} \right)
     \end{split}
 \end{equation*}
 
@@ -245,15 +250,24 @@ Plugging back into $(*)$, we get:
 \begin{equation*}
     \begin{split}
         \log l(\theta) 
-        &= \sum_{i=1}^n \left[ -y_i \log \left( 1 + \mathrm{e}^{-\langle x_i, \theta \rangle} \right) - \langle x_i, \theta \rangle(1 - y_i) - \log \left( 1 + \mathrm{e}^{-\langle x_i, \theta \rangle} \right) + y_i \log \left( 1 + \mathrm{e}^{-\langle x_i, \theta \rangle} \right) \right] \\
-        &= \sum_{i=1}^n \left[ - \langle x_i, \theta \rangle(1 - y_i) - \log \left( 1 + \mathrm{e}^{-\langle x_i, \theta \rangle} \right) \right]
+        &= \sum_{i=1}^n \left[ -y_i \log \left( 1 + \mathrm{e}^{-\langle x_i, \theta \rangle} \right) - \langle x_i, \theta \rangle(1 - 2y_i) - \log \left( 1 + \mathrm{e}^{-\langle x_i, \theta \rangle} \right) + y_i \log \left( 1 + \mathrm{e}^{-\langle x_i, \theta \rangle} \right) \right] \\
+        &= \sum_{i=1}^n \left[ - \langle x_i, \theta \rangle(1 - 2y_i) - \log \left( 1 + \mathrm{e}^{-\langle x_i, \theta \rangle} \right) \right]
     \end{split}
 \end{equation*}
 
 We can find the maximum likelihood estimator $\hat{\theta}_n$ by maximizing the $\log$-likelihood function,
 which is equivalent to find the minimum of the negative $\log$-likelihood function.
-\bigskip
 
+\begin{align*}
+    - \log l(\theta) 
+    &= - \sum_{i=1}^n \left[ - \langle x_i, \theta \rangle(1 - 2y_i) - \log \left( 1 + \mathrm{e}^{-\langle x_i, \theta \rangle} \right) \right] \\
+    &= \sum_{i=1}^n \left[ \langle x_i, \theta \rangle(1 - 2y_i) + \log \left( 1 + \mathrm{e}^{-\langle x_i, \theta \rangle} \right) \right] \\
+    &= \sum_{i=1}^n \left[ \log \mathrm{e}^{\langle x_i, \theta \rangle (1 - 2y_i)} + \log \left( 1 + \mathrm{e}^{-\langle x_i, \theta \rangle} \right) \right] \\
+    &= \sum_{i=1}^n \left[ \log \left( \mathrm{e}^{\langle x_i, \theta \rangle (1 - 2y_i)} \cdot \left( 1 + \mathrm{e}^{-\langle x_i, \theta \rangle} \right) \right) \right] \\
+    &= \sum_{i=1}^n \left[ \log \left( \mathrm{e}^{-2(y_i - \frac{1}{2})\langle x_i, \theta \rangle} + \mathrm{e}^{(- 2y_i)} \right) \right] \\
+\end{align*}
+
+\begin{comment}
 Thus, we should compute the gradient of the negative $\log$-likelihood w.r.t. $\theta$, set to $0$ and solve for $\theta$
 \footnote{Deisenroth, Marc Peter, Faisal, A. Aldo, Ong, Cheng Soon, \textit{Mathematics for Machine Learning}, Cambridge University Press, 2020, pp. 351.}
 :
@@ -261,60 +275,71 @@ Thus, we should compute the gradient of the negative $\log$-likelihood w.r.t. $\
 \begin{equation*}
     \begin{split}
         \nabla \left( - \log l(\theta) \right) 
-        &= \nabla \left( - \sum_{i=1}^n \left[ - \langle x_i, \theta \rangle(1 - y_i) - \log \left( 1 + \mathrm{e}^{-\langle x_i, \theta \rangle} \right) \right] \right) \\
-        &= \nabla \left( \sum_{i=1}^n \langle x_i, \theta \rangle(1 - y_i)\right) + \nabla \left(\sum_{i=1}^n\log \left( 1 + \mathrm{e}^{-\langle x_i, \theta \rangle} \right)\right) \\
-        &= \sum_{i=1}^n \left[ x_i(1 - y_i) - x_i \frac{\mathrm{e}^{-\langle x_i, \theta \rangle}}{1 + \mathrm{e}^{-\langle x_i, \theta \rangle}} \right] = 0 \\
+        &= \nabla \left( - \sum_{i=1}^n \left[ - \langle x_i, \theta \rangle(1 - 2y_i) - \log \left( 1 + \mathrm{e}^{-\langle x_i, \theta \rangle} \right) \right] \right) \\
+        &= \nabla \left( \sum_{i=1}^n \langle x_i, \theta \rangle(1 - 2y_i)\right) + \nabla \left(\sum_{i=1}^n\log \left( 1 + \mathrm{e}^{-\langle x_i, \theta \rangle} \right)\right) \\
+        &= \sum_{i=1}^n \left[ x_i(1 - 2y_i) - x_i \frac{\mathrm{e}^{-\langle x_i, \theta \rangle}}{1 + \mathrm{e}^{-\langle x_i, \theta \rangle}} \right] \\
+        &= \sum_{i=1}^n \left[ \frac{x_i(1 - 2y_i)(1 + \mathrm{e}^{-\langle x_i, \theta \rangle})}{(1 + \mathrm{e}^{-\langle x_i, \theta \rangle})} - \frac{x_i \mathrm{e}^{-\langle x_i, \theta \rangle}}{1 + \mathrm{e}^{-\langle x_i, \theta \rangle}} \right] \\
     \end{split}
 \end{equation*}
+\end{comment}
 
-If $\theta^\natural$ is given by:
+\textcolor{red}{Check this part! (about the 1)}
+\bigskip
+
+Since $\mathrm{e}^{(- 2y_i)}$ evaluates to $1$ when $y_i = 0$ and is a small constant when $y_i = 1$,
+also, taking the average (multiplying by $\frac{1}{n}$) will not change the result,
+to minimize $- \log l(\theta)$ will be equivalent to minimize the given expression:
 
 \begin{equation*}
-    \hat{\theta}_n \in \underset{\theta \in \mathbb{R}^p}{\operatorname{argmin}} L ( \theta ), \quad L (\theta) := \frac{1}{n} \sum_{i = 1}^n \log \left( 1 + \mathrm{e}^{-2(y_i - \frac{1}{2})\langle x_i, \theta \rangle} \right)
-\end{equation*}
+\hat{\theta}_n \in \underset{\theta \in \mathbb{R}^p}{\operatorname{argmin}} L ( \theta ), \quad L (\theta) := \frac{1}{n} \sum_{i = 1}^n \log \left( 1 + \mathrm{e}^{-2(y_i - \frac{1}{2})\langle x_i, \theta \rangle} \right) \qquad \square
+\end{equation*} 
 
+
+\begin{comment}
 Then $\hat{\theta}_n$ should also satisfy $\nabla L(\theta) = 0$, so we have:
 
 In order to calculate it, we can use the fact that the term inside the summation is of the form:
 
 \begin{equation*}
-    \log(1 + e^z)
+\log(1 + e^z)
 \end{equation*}
 
 So taking the derivative w.r.t. $z$ gives:
 
 \begin{equation*}
-    \frac{d}{dz} \log(1 + e^z) = \frac{e^z}{1 + e^z}
+\frac{d}{dz} \log(1 + e^z) = \frac{e^z}{1 + e^z}
 \end{equation*}
 
 Therefore we have $z = -2(y_i - \frac{1}{2})\langle x_i, \theta \rangle$, and combined using the chain rule will give:
 
 \begin{align*}
-    \nabla L(\theta)
-    &= \nabla \left( \frac{1}{n} \sum_{i = 1}^n \log \left( 1 + \mathrm{e}^{-2(y_i - \frac{1}{2})\langle x_i, \theta \rangle} \right) \right) \\
-    &= \frac{1}{n} \sum_{i = 1}^n \nabla \left( \log \left( 1 + \mathrm{e}^{-2(y_i - \frac{1}{2})\langle x_i, \theta \rangle} \right) \right) \\
-    &= \frac{1}{n} \sum_{i = 1}^n \frac{1}{1 + \mathrm{e}^{-2(y_i - \frac{1}{2})\langle x_i, \theta \rangle}} \cdot \nabla \left( -2(y_i - \frac{1}{2})\langle x_i, \theta \rangle \right) \\
-    &= \frac{1}{n} \sum_{i = 1}^n \frac{1}{1 + \mathrm{e}^{-2(y_i - \frac{1}{2})\langle x_i, \theta \rangle}} \cdot -2(y_i - \frac{1}{2}) x_i = 0
+\nabla L(\theta)
+&= \nabla \left( \frac{1}{n} \sum_{i = 1}^n \log \left( 1 + \mathrm{e}^{-2(y_i - \frac{1}{2})\langle x_i, \theta \rangle} \right) \right) \\
+&= \frac{1}{n} \sum_{i = 1}^n \nabla \left( \log \left( 1 + \mathrm{e}^{-2(y_i - \frac{1}{2})\langle x_i, \theta \rangle} \right) \right) \\
+&= \frac{1}{n} \sum_{i = 1}^n \frac{1}{1 + \mathrm{e}^{-2(y_i - \frac{1}{2})\langle x_i, \theta \rangle}} \cdot \nabla \left( 1 + \mathrm{e}^{-2(y_i - \frac{1}{2})\langle x_i, \theta \rangle} \right) \\
+&= \frac{1}{n} \sum_{i = 1}^n \frac{\mathrm{e}^{-2(y_i - \frac{1}{2})\langle x_i, \theta \rangle}}{1 + \mathrm{e}^{-2(y_i - \frac{1}{2})\langle x_i, \theta \rangle}} \cdot \nabla \left( -2(y_i - \frac{1}{2})\langle x_i, \theta \rangle \right) \\
+&= \frac{1}{n} \sum_{i = 1}^n \frac{\mathrm{e}^{-2(y_i - \frac{1}{2})\langle x_i, \theta \rangle}}{1 + \mathrm{e}^{-2(y_i - \frac{1}{2})\langle x_i, \theta \rangle}} \cdot -2(y_i - \frac{1}{2}) x_i = 0 \tag{1}
 \end{align*}
 
-Simplify:
+Observe that when $y_i = 1$, the term in the summation will become:
 
-\begin{align*}
-    \sum_{i = 1}^n \frac{(1 - y_i)x_i}{1 + \mathrm{e}^{-2(y_i - \frac{1}{2})\langle x_i, \theta \rangle}} = 0 \tag{1}
-\end{align*}
+\begin{equation*}
+\frac{\mathrm{e}^{-\langle x_i, \theta \rangle}}{1 + \mathrm{e}^{-\langle x_i, \theta \rangle}} \cdot - x_i
+\end{equation*}
 
-Observe that when $y_i = 1$, the term in the summation will become $0$, 
 and if $y_i = 0$, the term will become:
 
 \begin{equation*}
-    \frac{x_i}{1 + e^{\langle x_i, \theta \rangle}}
+\frac{\mathrm{e}^{\langle x_i, \theta \rangle}}{1 + \mathrm{e}^{\langle x_i, \theta \rangle}} \cdot x_i
 \end{equation*}
 
 Thus, we can rewrite $(1)$ as:
 
-\begin{equation*}
-    n \cdot \frac{\mathrm{e}^{-\langle x_i, \theta^\natural \rangle}}{1 + \mathrm{e}^{-\langle x_i, \theta^\natural \rangle}} \cdot \left( \frac{x_i}{1 + e^{\langle x_i, \theta \rangle}} \right) = 0
-\end{equation*}
+\begin{align*}
+&n \cdot \mathsf{P}(y_i = 1) \cdot \left( \frac{- x_i \mathrm{e}^{-\langle x_i, \theta \rangle}}{1 + \mathrm{e}^{-\langle x_i, \theta \rangle}} \right) + n \cdot \mathsf{P}(y_i = 0) \cdot \left( \frac{x_i \mathrm{e}^{\langle x_i, \theta \rangle}}{1 + e^{\langle x_i, \theta \rangle}} \right) = 0 \\
+\Rightarrow \ &n \cdot \frac{1}{1 + \mathrm{e}^{-\langle x_i, \theta^\natural \rangle}} \cdot \left( \frac{- x_i}{1 + \mathrm{e}^{-\langle x_i, \theta^\natural \rangle}} \right) + n \cdot \left(\frac{\mathrm{e}^{-\langle x_i, \theta^\natural \rangle}}{1 + \mathrm{e}^{-\langle x_i, \theta^\natural \rangle}} \right) \cdot \left( \frac{x_i}{1 + \mathrm{e}^{\langle x_i, \theta^\natural \rangle}} \right) = 0
+\end{align*}
+\end{comment}
 
 \subsection*{(2)}
 
@@ -334,7 +359,7 @@ Following the same steps in $1.(1)$, we first differentiate $L (\theta)$ w.r.t. 
 \begin{align*}
     \nabla L(\theta) 
     &= \frac{1}{n} \sum_{i = 1}^n \frac{1}{1 + \mathrm{e}^{-2(y_i - \frac{1}{2})\langle x_i, \theta \rangle}} \cdot -2(y_i - \frac{1}{2}) x_i \cdot \mathrm{e}^{-2(y_i - \frac{1}{2})\langle x_i, \theta \rangle} \\
-    &= \frac{1}{n} \sum_{i = 1}^n \frac{x_i(1 - y_i)\mathrm{e}^{-2(y_i - \frac{1}{2})\langle x_i, \theta \rangle}}{1 + \mathrm{e}^{-2(y_i - \frac{1}{2})\langle x_i, \theta \rangle}}
+    &= \frac{1}{n} \sum_{i = 1}^n \frac{x_i(1 - 2y_i)\mathrm{e}^{-2(y_i - \frac{1}{2})\langle x_i, \theta \rangle}}{1 + \mathrm{e}^{-2(y_i - \frac{1}{2})\langle x_i, \theta \rangle}}
 \end{align*}
 
 To make the equation more readble, 
@@ -343,7 +368,7 @@ so that $\nabla L(\theta)$ is equivalent to:
 
 \begin{align*}
     \nabla L(\theta) 
-    &= \frac{1}{n} \sum_{i = 1}^n \frac{x_i(1 - y_i)\mathrm{e}^{-z_i}}{1 + \mathrm{e}^{-z_i}}
+    &= \frac{1}{n} \sum_{i = 1}^n \frac{x_i(1 - 2y_i)\mathrm{e}^{-z_i}}{1 + \mathrm{e}^{-z_i}}
 \end{align*}
 
 In order to calculate the Hessian, 
@@ -354,26 +379,27 @@ we first calculate some of the terms:
 \end{align*}
 
 \begin{align*}
-    \frac{d}{d\theta}e^{-z_i} = -2(y_i - \frac{1}{2})x_i\mathrm{e}^{-z_i}
+    \frac{d}{d\theta}e^{-z_i} = \textcolor{orange}{-2(y_i - \frac{1}{2})x_i\mathrm{e}^{-z_i}}
 \end{align*}
 
 Then we'll have:
 
 \begin{align*}
-    \frac{d}{d\theta} \left( \frac{(1 - y_i)\mathrm{e}^{-z_i}}{1 + \mathrm{e}^{-z_i}} \right)
-    &= \frac{\frac{d}{d\theta}\left((1 - y_i)\mathrm{e}^{-z_i} \right) \cdot (1 + \mathrm{e}^{-z_i}) - (1 - y_i)\mathrm{e}^{-z_i} \cdot \frac{d}{d\theta}( 1 + \mathrm{e}^{-z_i})}{(1 + \mathrm{e}^{-z_i})^2} \\
-    &= \frac{-2(1 - y_i)(y_i - \frac{1}{2})x_i\mathrm{e}^{-z_i} (1 + \mathrm{e}^{-z_i}) + 2 (1 - y_i)\mathrm{e}^{-z_i} (y_i - \frac{1}{2})x_i\mathrm{e}^{-z_i}}{(1 + \mathrm{e}^{-z_i})^2} \\
-    &= 2(1 - y_i)(y_i - \frac{1}{2})x_i\mathrm{e}^{-z_i}\frac{ (-1 - \mathrm{e}^{-z_i} + \mathrm{e}^{-z_i})}{(1 +\mathrm{e}^{-z_i})^2} \\
-    &= \frac{-2(1 - y_i)(y_i - \frac{1}{2})x_i\mathrm{e}^{-z_i}}{(1 +\mathrm{e}^{-z_i})^2} \\
+    \frac{d}{d\theta} \left( \frac{(1 - 2y_i)\mathrm{e}^{-z_i}}{1 + \mathrm{e}^{-z_i}} \right)
+    &= \frac{\textcolor{orange}{\frac{d}{d\theta}}\left((1 - 2y_i)\mathrm{e}^{-z_i} \right) \cdot (1 + \mathrm{e}^{-z_i}) - (1 - 2y_i)\mathrm{e}^{-z_i} \cdot \textcolor{orange}{\frac{d}{d\theta}( 1 + \mathrm{e}^{-z_i})}}{(1 + \mathrm{e}^{-z_i})^2} \\
+    &= \frac{\textcolor{orange}{-2}(1 - 2y_i)\textcolor{orange}{(y_i - \frac{1}{2})x_i\mathrm{e}^{-z_i}} (1 + \mathrm{e}^{-z_i}) + \textcolor{orange}{2} (1 - 2y_i)\mathrm{e}^{-z_i} \textcolor{orange}{(y_i - \frac{1}{2})x_i\mathrm{e}^{-z_i}}}{(1 + \mathrm{e}^{-z_i})^2} \\
+    &= \frac{2(1 - 2y_i)(y_i - \frac{1}{2})x_i\mathrm{e}^{-z_i}\left[(-1 - e^{-z_i}) + e^{-z_i}\right]}{(1 +\mathrm{e}^{-z_i})^2}\\
+    &= 2(1 - 2y_i)(y_i - \frac{1}{2})x_i\mathrm{e}^{-z_i}\frac{-1}{(1 +\mathrm{e}^{-z_i})^2} \\
+    &= \frac{-2(1 - 2y_i)(y_i - \frac{1}{2})x_i\mathrm{e}^{-z_i}}{(1 +\mathrm{e}^{-z_i})^2} 
 \end{align*}
 
 Getting back to the Hessian, we have:
 
 \begin{align*}
-    \nabla^2 L(\theta)
-    &= \frac{1}{n} \sum_{i = 1}^n \frac{d}{d\theta} \left[ x_i \left( \frac{(1 - y_i)\mathrm{e}^{-z_i}}{1 + \mathrm{e}^{-z_i}} \right) \right] \\
-    &= \frac{1}{n} \sum_{i = 1}^n x_i \frac{-2(1 - y_i)(y_i - \frac{1}{2})x_i\mathrm{e}^{-z_i}}{(1 +\mathrm{e}^{-z_i})^2} \\
-    &= \frac{1}{n} \sum_{i = 1}^n x_i x_i^\intercal  \frac{-2(1 - y_i)(y_i - \frac{1}{2})\mathrm{e}^{-z_i}}{(1 +\mathrm{e}^{-z_i})^2} \tag{1}
+    \textcolor{Green}{\nabla^2 L(\theta)}
+    &= \frac{1}{n} \sum_{i = 1}^n \frac{d}{d\theta} \left[ x_i \left( \frac{(1 - 2y_i)\mathrm{e}^{-z_i}}{1 + \mathrm{e}^{-z_i}} \right) \right] \\
+    &= \frac{1}{n} \sum_{i = 1}^n x_i \frac{-2(1 - 2y_i)(y_i - \frac{1}{2})x_i\mathrm{e}^{-z_i}}{(1 +\mathrm{e}^{-z_i})^2} \\
+    &\textcolor{Green}{= \frac{1}{n} \sum_{i = 1}^n x_i x_i^\intercal  \frac{-2(1 - 2y_i)(y_i - \frac{1}{2})\mathrm{e}^{-z_i}}{(1 +\mathrm{e}^{-z_i})^2} \tag{1}}
 \end{align*}
 
 Since $(1 +\mathrm{e}^{-z_i})^2$ is strictly positive, the Hessian exists for all point in $\mathbb{R}^p$.
@@ -388,16 +414,16 @@ By $(1)$, for any $v \in \mathbb{R}^p$, we have:
 
 \begin{align*}
     v^\intercal  \nabla^2 L(\theta) v
-    &= \frac{1}{n} \sum_{i = 1}^n v^\intercal  x_i x_i^\intercal  \frac{-2(1 - y_i)(y_i - \frac{1}{2})\mathrm{e}^{-z_i}}{(1 +\mathrm{e}^{-z_i})^2} v \\
-    &= \frac{1}{n} \sum_{i = 1}^n \frac{-2(1 - y_i)(y_i - \frac{1}{2})v^\intercal  x_i x_i^\intercal  v}{(1 +\mathrm{e}^{-z_i})^2} \\
+    &= \frac{1}{n} \sum_{i = 1}^n v^\intercal  x_i x_i^\intercal  \frac{-2(1 - 2y_i)(y_i - \frac{1}{2})\mathrm{e}^{-z_i}}{(1 +\mathrm{e}^{-z_i})^2} v \\
+    &= \frac{1}{n} \sum_{i = 1}^n \frac{-2(1 - 2y_i)(y_i - \frac{1}{2})v^\intercal  x_i x_i^\intercal  v}{(1 +\mathrm{e}^{-z_i})^2} \\
 \end{align*}
 
 For the denominator, $(1 +\mathrm{e}^{-z_i})^2 > 0$, 
-and for the coefficient, $-2(1 - y_i)(y_i - \frac{1}{2})$, 
+and for the coefficient, $-2(1 - 2y_i)(y_i - \frac{1}{2})$, 
 since $y_i \in \{0, 1\}$, we have:
 
 \begin{align*}
-    -2(1 - y_i)(y_i - \frac{1}{2}) \ge 0
+    -2(1 - 2y_i)(y_i - \frac{1}{2}) \ge 0
 \end{align*}
 
 Last, we have $v^\intercal  x_i x_i^\intercal  v$, this is equivelent to $(v^\intercal x_i)^2$, which is non-negative.
@@ -405,7 +431,7 @@ Last, we have $v^\intercal  x_i x_i^\intercal  v$, this is equivelent to $(v^\in
 Therefore, we have:
 
 \begin{align*}
-    \frac{1}{n} \sum_{i = 1}^n \frac{-2(1 - y_i)(y_i - \frac{1}{2})v^\intercal  x_i x_i^\intercal  v}{(1 +\mathrm{e}^{-z_i})^2} \ge 0
+    \frac{1}{n} \sum_{i = 1}^n \frac{-2(1 - 2y_i)(y_i - \frac{1}{2})v^\intercal  x_i x_i^\intercal  v}{(1 +\mathrm{e}^{-z_i})^2} \ge 0
 \end{align*}
 
 Thus the Hessian is positive semidefinite, and $L(\theta)$ is convex. $\square$
@@ -435,17 +461,213 @@ By the previous subproblem, we have:
 
 \begin{align*}
     \nabla L(\theta^{\natural}) 
-    &= \frac{1}{n} \sum_{i = 1}^n \frac{x_i(1 - y_i)\mathrm{e}^{-z_i}}{1 + \mathrm{e}^{-z_i}} 
-    \qquad \text{where } z_i = 2(y_i - \frac{1}{2})\langle x_i, \theta^{\natural} \rangle
+    &= \frac{1}{n} \sum_{i = 1}^n \frac{x_i(1 - 2y_i)\mathrm{e}^{-z_i}}{1 + \mathrm{e}^{-z_i}} 
+    \qquad \text{where } z_i = 2(y_i - \frac{1}{2})\langle x_i, \theta^{\natural} \rangle \tag{*}
 \end{align*}
 
 Thus, to show that $\nabla L ( \theta^\natural ) = - \frac{1}{n} X^\intercal  (y - \mathsf{E} [ y ] )$,  
 it is equivalent to prove:
 
 \begin{align*}
-    \sum_{i = 1}^n \frac{x_i(1 - y_i)\mathrm{e}^{-z_i}}{1 + \mathrm{e}^{-z_i}} = X^\intercal  (y - \mathsf{E} [ y ])
+    &\frac{1}{n} \sum_{i = 1}^n \frac{x_i(1 - 2y_i)\mathrm{e}^{-z_i}}{1 + \mathrm{e}^{-z_i}} = - \frac{1}{n} X^\intercal  (y - \mathsf{E} [ y ]) \\
+    \Rightarrow \ &\sum_{i = 1}^n \frac{x_i(1 - 2y_i)\mathrm{e}^{-z_i}}{1 + \mathrm{e}^{-z_i}} = X^\intercal  (\mathsf{E} [ y ] - y) \tag{1}
 \end{align*}
 
+\begin{comment}
+If we reformulate the left-hand side into matrix form, 
+by using the definition of $X$, and define $u_i = \frac{(1 - 2y_i)\mathrm{e}^{-z_i}}{1 + \mathrm{e}^{-z_i}}$, 
+we have:
+    
+\begin{align*}
+    \sum_{i = 1}^n \frac{x_i(1 - 2y_i)\mathrm{e}^{-z_i}}{1 + \mathrm{e}^{-z_i}} 
+    &= \sum_{i = 1}^n x_i u_i \\
+    &= \begin{bmatrix}
+        x_1 & x_2 & \cdots & x_n
+    \end{bmatrix}
+    \begin{bmatrix}
+        u_1 \\
+        u_2 \\
+        \vdots \\
+        u_n
+    \end{bmatrix} \\
+    &= X^\intercal u
+\end{align*}
+
+Therefore, the equation $(1)$ that we need to prove is equivalent to:
+
+\begin{align*}
+    X^\intercal u = X^\intercal  (\mathsf{E} [ y ] - y) \tag{2}
+\end{align*}
+\end{comment}
+
+\begin{center}
+    \textbf{Right-hand side of $(1)$}
+\end{center}
+
+First we knew that the definition of $\mathsf{E} [ y ]$ is:
+
+\begin{align*}
+    \mathsf{E} [ y ] 
+    &= \begin{bmatrix}
+        \mathsf{E} [ y_1 ] \\
+        \mathsf{E} [ y_2 ] \\
+        \vdots \\
+        \mathsf{E} [ y_n ]
+    \end{bmatrix} \\
+\end{align*}
+
+So:
+
+\begin{align*}
+    \mathsf{E} [ y ] - y 
+    &= \begin{bmatrix}
+        \mathsf{E} [ y_1 ] - y_1 \\
+        \mathsf{E} [ y_2 ] - y_2 \\
+        \vdots \\
+        \mathsf{E} [ y_n ] - y_n
+    \end{bmatrix}
+\end{align*}
+
+\begin{comment}
+    Thus, to show $(2)$ is equivalent to showing:
+    
+    \begin{align*}
+    \frac{(1 - 2y_i)\mathrm{e}^{-z_i}}{1 + \mathrm{e}^{-z_i}} = \mathsf{E} [ y_i ] - y_i \qquad \forall i \in [n] \quad \text{ where } z_i = 2(y_i - \frac{1}{2})\langle x_i, \theta^{\natural} \rangle \tag{3}
+    \end{align*}
+\end{comment}
+
+By subproblem $(1)$, we have:
+
+\begin{align*}
+    p(y_i | x_i, \theta^{\natural}) = \left( \frac{1}{1 + \mathrm{e}^{-\langle x_i, \theta^{\natural} \rangle}} \right)^{y_i} \left( \frac{\mathrm{e}^{-\langle x_i, \theta^{\natural} \rangle}}{1 + \mathrm{e}^{-\langle x_i, \theta^{\natural} \rangle}} \right)^{1 - 2y_i}
+\end{align*}
+
+Therefore, its expected value is:
+
+\begin{align*}
+    \mathsf{E} [ y_i ] 
+    &= 1 \times \mathsf{P} ( y_i = 1 ) + 0 \times \mathsf{P} ( y_i = 0 ) \\
+    &= \mathsf{P} ( y_i = 1 ) \\
+    &= \frac{1}{1 + \mathrm{e}^{-\langle x_i, \theta^{\natural} \rangle}}
+\end{align*}
+
+
+Therefore, we can rewrite the right-hand side of $(1)$:
+
+\begin{align*}
+    X^\intercal (\mathsf{E} [ y_i ] - y_i)
+    &= \sum_{i = 1}^n \left( \frac{1}{1 + \mathrm{e}^{-\langle x_i, \theta^{\natural} \rangle}} - y_i \right) x_i
+\end{align*}
+
+\textbf{Case.} For \( y_i = 1 \)
+\bigskip
+
+For the term in the summation, consider the case $y_i = 1$, this would evaluate to:
+
+\begin{align*}
+    (\mathsf{E} [ y_i ] - y_i ) x_i
+    &= \left( \frac{1}{1 + \mathrm{e}^{-\langle x_i, \theta^{\natural} \rangle}} - 1 \right) x_i \\
+    &= \left( \frac{1}{1 + \mathrm{e}^{-\langle x_i, \theta^{\natural} \rangle}} - \frac{1 + \mathrm{e}^{-\langle x_i, \theta^{\natural} \rangle}}{1 + \mathrm{e}^{-\langle x_i, \theta^{\natural} \rangle}} \right) x_i \\
+    &= \frac{- x_i \mathrm{e}^{-\langle x_i, \theta^{\natural} \rangle}}{1 + \mathrm{e}^{-\langle x_i, \theta^{\natural} \rangle}} 
+\end{align*}
+
+
+\textbf{Case.} For \( y_i = 0 \)
+
+\begin{align*}
+    (\mathsf{E} [ y_i ] - y_i ) x_i
+    &= \left( \frac{1}{1 + \mathrm{e}^{-\langle x_i, \theta^{\natural} \rangle}} - 0 \right) x_i \\
+    &= \frac{x_i}{1 + \mathrm{e}^{-\langle x_i, \theta^{\natural} \rangle}}
+\end{align*}
+
+\bigskip
+
+\begin{center}
+    \textbf{Left-hand side of $(1)$}
+\end{center}
+
+Consider the left-hand side of $(1)$, expand the expression by plugging in the definition of $z_i$:
+
+\begin{align*}
+    \frac{x_i (1 - 2y_i)\mathrm{e}^{-2(y_i - \frac{1}{2})\langle x_i, \theta^{\natural} \rangle}}{1 + \mathrm{e}^{-2(y_i - \frac{1}{2})\langle x_i, \theta^{\natural} \rangle}}
+\end{align*}
+
+\textbf{Case.} For \( y_i = 1 \)
+
+\begin{align*}
+    \frac{x_i (1 - 2)\mathrm{e}^{-2(1 - \frac{1}{2})\langle x_i, \theta^{\natural} \rangle}}{1 + \mathrm{e}^{-2(1 - \frac{1}{2})\langle x_i, \theta^{\natural} \rangle}}
+    = \frac{- x_i e^{-\langle x_i, \theta^{\natural} \rangle}}{1 + \mathrm{e}^{-\langle x_i, \theta^{\natural} \rangle}} 
+\end{align*}
+
+\textbf{Case.} For \( y_i = 0 \)
+
+\begin{align*}
+    \frac{x_i (1 - 0)\mathrm{e}^{-2(0 - \frac{1}{2})\langle x_i, \theta^{\natural} \rangle}}{1 + \mathrm{e}^{-2(0 - \frac{1}{2})\langle x_i, \theta^{\natural} \rangle}}
+    &= \frac{x_i \mathrm{e}^{\langle x_i, \theta^{\natural} \rangle}}{1 + \mathrm{e}^{\langle x_i, \theta^{\natural} \rangle}}
+\end{align*}
+
+Combine all of the above into equation $(1)$, we found that the equation we need to prove :
+
+\begin{align*}
+    \sum_{i = 1}^n \frac{x_i (1 - 2y_i)\mathrm{e}^{-2(y_i - \frac{1}{2})\langle x_i, \theta^{\natural} \rangle}}{1 + \mathrm{e}^{-2(y_i - \frac{1}{2})\langle x_i, \theta^{\natural} \rangle}} 
+    = \sum_{i = 1}^n \left( \frac{1}{1 + \mathrm{e}^{-\langle x_i, \theta^{\natural} \rangle}} - y_i \right) x_i \\
+\end{align*}    
+
+is actually the same:
+
+\begin{align*}
+    &\sum_{\{i | y_i = 1\}} \frac{- x_i \mathrm{e}^{-\langle x_i, \theta^{\natural} \rangle}}{1 + \mathrm{e}^{-\langle x_i, \theta^{\natural} \rangle}} + \sum_{\{i | y_i = 0\}} \frac{x_i \mathrm{e}^{\langle x_i, \theta^{\natural} \rangle}}{1 + \mathrm{e}^{\langle x_i, \theta^{\natural} \rangle}} 
+    = \sum_{\{i | y_i = 1\}} \frac{- x_i \mathrm{e}^{-\langle x_i, \theta^{\natural} \rangle}}{1 + \mathrm{e}^{-\langle x_i, \theta^{\natural} \rangle}} + \sum_{\{i | y_i = 0\}} \frac{x_i}{1 + \mathrm{e}^{-\langle x_i, \theta^{\natural} \rangle}} \qquad \square
+\end{align*}
+
+\begin{comment}
+--------------------------------
+
+The lefthand side can be written as:
+
+\begin{align*}
+    \sum_{i = 1}^n \frac{x_i(1 - 2y_i)\mathrm{e}^{-z_i}}{1 + \mathrm{e}^{-z_i}}
+    &= \sum_{i = 1}^n \frac{x_i\mathrm{e}^{-z_i}}{1 + \mathrm{e}^{-z_i}} - \sum_{i = 1}^n \frac{x_i y_i \mathrm{e}^{-z_i}}{1 + \mathrm{e}^{-z_i}}
+\end{align*}
+
+So:
+
+\begin{align*}
+    -\frac{1}{n}X^\intercal  (y - \mathsf{E} [ y ])
+    &= -\frac{1}{n}X^\intercal y + \frac{1}{n}X^\intercal \mathsf{E} [ y ] \\
+    &= \frac{1}{n}
+    \begin{bmatrix}
+        x_1 & x_2 & \cdots & x_n
+    \end{bmatrix}
+    \begin{bmatrix}
+        \mathsf{E} [ y_1 ]\\
+        \mathsf{E} [ y_2 ] \\
+        \vdots \\
+        \mathsf{E} [ y_n ]
+    \end{bmatrix}
+    - \frac{1}{n}
+    \begin{bmatrix}
+        x_1 & x_2 & \cdots & x_n
+    \end{bmatrix}
+    \begin{bmatrix}
+        y_1 \\
+        y_2 \\
+        \vdots \\
+        y_n
+    \end{bmatrix} \\
+    &= \frac{1}{n} \sum_{i = 1}^n (\mathsf{E} [ y_i ] - y_i )x_i  
+\end{align*}
+
+
+
+
+
+By the definition of $\nabla L(\theta^{\natural})$ in $(*)$, we have:
+
+\begin{align*}
+    \nabla L(\theta^{\natural}) 
+    &= \frac{1}{n} \sum_{i = 1}^n \frac{x_i(1 - 2y_i)\mathrm{e}^{-2(y_i - \frac{1}{2})\langle x_i, \theta^{\natural} \rangle}}{1 + \mathrm{e}^{-2(y_i - \frac{1}{2})\langle x_i, \theta^{\natural} \rangle}} \\
+\end{align*}
 
 === could be wrong ===
 \bigskip
@@ -457,13 +679,328 @@ which is equivalent to satisfy:
 \begin{align*}
     \nabla L(\theta^{\natural}) = 0
 \end{align*}
+\end{comment}
+
+\subsection*{(4)}
+
+By equation $(1)$ in $2. (2)$, we have:
+
+\begin{align*}
+    \nabla^2 L(\theta^{\natural}) = \frac{1}{n} \sum_{i = 1}^n x_i x_i^\intercal  \frac{-2(1 - 2y_i)(y_i - \frac{1}{2})\mathrm{e}^{-z_i}}{(1 +\mathrm{e}^{-z_i})^2}
+    \qquad \text{where } z_i = 2(y_i - \frac{1}{2})\langle x_i, \theta^{\natural} \rangle 
+\end{align*}
+
+As the approach used in the previous subproblem, we can rewrite the summation part 
+by deviding into the cases that $y_i = 1$ and $y_i = 0$:
+
+\begin{align*}
+    \nabla^2 L(\theta^{\natural}) 
+    &= \frac{1}{n} \left[ \sum_{\{i | y_i = 1\}} x_i x_i^\intercal  \frac{-2(1 - 2y_i)(y_i - \frac{1}{2})\mathrm{e}^{-z_i}}{(1 +\mathrm{e}^{-z_i})^2} +\sum_{\{i | y_i = 0\}} x_i x_i^\intercal  \frac{-2(1 - 2y_i)(y_i - \frac{1}{2})\mathrm{e}^{-z_i}}{(1 +\mathrm{e}^{-z_i})^2} \right] \\
+    &= \frac{1}{n} \left[ \sum_{\{i | y_i = 1\}} x_i x_i^\intercal  \frac{-2(1 - 2)(1 - \frac{1}{2})\mathrm{e}^{-z_i}}{(1 +\mathrm{e}^{-z_i})^2} +\sum_{\{i | y_i = 0\}} x_i x_i^\intercal  \frac{-2(1 - 0)(0 - \frac{1}{2})\mathrm{e}^{-z_i}}{(1 +\mathrm{e}^{-z_i})^2} \right] \\
+    &= \frac{1}{n} \left[ \sum_{\{i | y_i = 1\}} x_i x_i^\intercal  \frac{\mathrm{e}^{-\langle x_i, \theta^{\natural} \rangle}}{(1 +\mathrm{e}^{-\langle x_i, \theta^{\natural} \rangle})^2} +\sum_{\{i | y_i = 0\}} x_i x_i^\intercal  \frac{\mathrm{e}^{\langle x_i, \theta^{\natural} \rangle}}{(1 +\mathrm{e}^{\langle x_i, \theta^{\natural} \rangle})^2} \right] \tag{1} \\
+\end{align*}
+
+Need to prove that:
+
+\begin{align*}
+    \nabla^2 L(\theta^{\natural})  = X^\intercal D X 
+    \qquad \text{where } D = \begin{bmatrix}
+        Var(y_1) & 0 & \cdots & 0 \\
+        0 & Var(y_2) & \cdots & 0 \\
+        \vdots & \vdots & \ddots & \vdots \\
+        0 & 0 & \cdots & Var(y_n)
+    \end{bmatrix}
+\end{align*}
+
+To calculate $Var(y_i)$, we knew that:
+
+\begin{align*}
+    Var(y_i) = \mathsf{E} [ y_i^2 ] - \mathsf{E} [ y_i ]^2
+\end{align*}
+
+Since $y_i \in \{0, 1\}$, and from the previous subproblem $2. (3)$, we have:
+
+\begin{align*}
+    \mathsf{E} [ y_i ] = \mathsf{P} ( y_i = 1 ) = \frac{1}{1 + \mathrm{e}^{-\langle x_i, \theta^{\natural} \rangle}}
+\end{align*}
+
+So we can derive the following:
+
+\begin{align*}
+    \mathsf{E} [ y_i^2 ] 
+    &= \mathsf{P} ( y_i = 1 ) \cdot 1^2 + \mathsf{P} ( y_i = 0 ) \cdot 0^2 \\
+    &= \frac{1}{1 + \mathrm{e}^{-\langle x_i, \theta^{\natural} \rangle}}
+\end{align*}
 
 
+\begin{align*}
+    \mathsf{E} [ y_i ]^2 = \left( \frac{1}{1 + \mathrm{e}^{-\langle x_i, \theta^{\natural} \rangle}} \right)^2
+\end{align*}
+
+Hence, we have:
+
+\begin{align*}
+    Var(y_i) = \mathsf{E} [ y_i^2 ] - \mathsf{E} [ y_i ]^2
+    &= \frac{1}{1 + \mathrm{e}^{-\langle x_i, \theta^{\natural} \rangle}} - \left( \frac{1}{1 + \mathrm{e}^{-\langle x_i, \theta^{\natural} \rangle}} \right)^2 \\
+    &= \frac{1}{1 + \mathrm{e}^{-\langle x_i, \theta^{\natural} \rangle}} \left( 1 - \frac{1}{1 + \mathrm{e}^{-\langle x_i, \theta^{\natural} \rangle}} \right) \\
+    &= \frac{\mathrm{e}^{-\langle x_i, \theta^{\natural} \rangle}}{(1 + \mathrm{e}^{-\langle x_i, \theta^{\natural} \rangle})^2}
+\end{align*}
+
+Calculate $\frac{1}{n}X^\intercal D X$:
+
+\begin{align*}
+    \frac{1}{n}X^\intercal D X
+    &= \frac{1}{n} \begin{bmatrix}
+        x_1 & x_2 & \cdots & x_n
+    \end{bmatrix}
+    \begin{bmatrix}
+        \frac{\mathrm{e}^{-\langle x_1, \theta^{\natural} \rangle}}{(1 + \mathrm{e}^{-\langle x_1, \theta^{\natural} \rangle})^2} & 0 & \cdots & 0 \\
+        0 & \frac{\mathrm{e}^{-\langle x_2, \theta^{\natural} \rangle}}{(1 + \mathrm{e}^{-\langle x_2, \theta^{\natural} \rangle})^2} & \cdots & 0 \\
+        \vdots & \vdots & \ddots & \vdots \\
+        0 & 0 & \cdots & \frac{\mathrm{e}^{-\langle x_n, \theta^{\natural} \rangle}}{(1 + \mathrm{e}^{-\langle x_n, \theta^{\natural} \rangle})^2}
+    \end{bmatrix}
+    \begin{bmatrix}
+        x_1^\intercal \\ x_2^\intercal \\ \vdots \\ x_n^\intercal
+    \end{bmatrix} \\
+    &= \frac{1}{n} \sum_{i = 1}^n \frac{x_i x_i^\intercal \mathrm{e}^{-\langle x_i, \theta^{\natural} \rangle}}{(1 + \mathrm{e}^{-\langle x_i, \theta^{\natural} \rangle})^2}
+\end{align*}
+
+This result can also be split into the cases that $y_i = 1$ and $y_i = 0$:
+
+\begin{align*}
+    \frac{1}{n} \sum_{i = 1}^n \frac{x_i x_i^\intercal \mathrm{e}^{-\langle x_i, \theta^{\natural} \rangle}}{(1 + \mathrm{e}^{-\langle x_i, \theta^{\natural} \rangle})^2}
+    &= \frac{1}{n} \left[ \sum_{\{i | y_i = 1\}} \frac{x_i x_i^\intercal \mathrm{e}^{-\langle x_i, \theta^{\natural} \rangle}}{(1 + \mathrm{e}^{-\langle x_i, \theta^{\natural} \rangle})^2} +\sum_{\{i | y_i = 0\}} \frac{x_i x_i^\intercal \mathrm{e}^{-\langle x_i, \theta^{\natural} \rangle} \cdot (\mathrm{e}^{\langle x_i, \theta^{\natural} \rangle})^2}{(1 + \mathrm{e}^{-\langle x_i, \theta^{\natural} \rangle})^2 \cdot (\mathrm{e}^{\langle x_i, \theta^{\natural} \rangle})^2} \right]\\
+    &= \frac{1}{n} \left[ \sum_{\{i | y_i = 1\}} \frac{x_i x_i^\intercal \mathrm{e}^{-\langle x_i, \theta^{\natural} \rangle}}{(1 + \mathrm{e}^{-\langle x_i, \theta^{\natural} \rangle})^2} +\sum_{\{i | y_i = 0\}} \frac{x_i x_i^\intercal \mathrm{e}^{\langle x_i, \theta^{\natural} \rangle}}{(1 + \mathrm{e}^{\langle x_i, \theta^{\natural} \rangle})^2} \right]
+\end{align*}
+
+Which is exactly the same as equation $(1)$, therefore, we have proven that $\nabla^2 L ( \theta^\natural ) = \frac{1}{n} X^{\mathsf{\scriptscriptstyle{T}}} D X$ holds. $\square$
+
+\subsection*{(5)}
+
+In the last part of the subproblem $2. (2)$, we have already shown that $0 \le \nabla^2 L (\theta)$.
+
+Therefore, we need to show that:
+
+\begin{align*}
+    \nabla^2 L (\theta) \leq \frac{\lambda_{\max}( X^{\mathsf{\scriptscriptstyle{T}}} X )}{4 n } I, \quad \forall \theta \in \mathbb{R}^p
+\end{align*}
+
+Which means that we need to show:
+
+\begin{align*}
+    \frac{\lambda_{\max}( X^{\mathsf{\scriptscriptstyle{T}}} X )}{4 n } I - \nabla^2 L (\theta), \quad \forall \theta \in \mathbb{R}^p
+\end{align*}
+
+is positive semi-definite.
+\bigskip
+
+Since the expression $\in \mathbb{R}^{p \times p}$, 
+given arbitrary $u \in \mathbb{R}^p$, we need to show that:
+
+\begin{align*}
+    &u^\intercal \left( \frac{\lambda_{\max}( X^{\mathsf{\scriptscriptstyle{T}}} X )}{4 n } I - \nabla^2 L (\theta) \right) u \geq 0 \\
+    \Rightarrow \ &u^\intercal \frac{\lambda_{\max}( X^{\mathsf{\scriptscriptstyle{T}}} X )}{4 n } I u \geq u^\intercal \nabla^2 L (\theta) u \\
+\end{align*}
+
+Plugging in the expression of $\nabla^2 L (\theta)$ from equation $(1)$ in subproblem $2. (2)$, we have:
+
+\begin{align*}
+    u^\intercal \textcolor{Green}{\nabla^2 L (\theta)} u 
+    &= u^\intercal \textcolor{Green}{\frac{1}{n} \sum_{i = 1}^n x_i x_i^\intercal  \frac{-2(1 - 2y_i)(y_i - \frac{1}{2})\mathrm{e}^{-z_i}}{(1 +\mathrm{e}^{-z_i})^2}} u \\
+    &= \frac{1}{n} \sum_{i = 1}^n u^\intercal x_i x_i^\intercal u \frac{(-2(1 - 2y_i)(y_i - \frac{1}{2})\mathrm{e}^{-z_i})}{(1 +\mathrm{e}^{-z_i})^2} \\
+    &= \frac{1}{n} \sum_{i = 1}^n u^\intercal x_i x_i^\intercal u \textcolor{Thistle}{\frac{-2(1 - 2y_i)(y_i - \frac{1}{2})\mathrm{e}^{-z_i}}{(1 +\mathrm{e}^{-z_i})^2}} \qquad \text{where } z_i = 2(y_i - \frac{1}{2})\langle x_i, \theta \rangle \\
+\end{align*}
+
+Consider the possible values of the term 
+$\textcolor{Thistle}{\frac{-2(1 - 2y_i)(y_i - \frac{1}{2})\mathrm{e}^{-z_i}}{(1 +\mathrm{e}^{-z_i})^2}}$:
+\bigskip
+
+\textbf{Case.} For \( y_i = 1 \)
+
+\begin{align*}
+    \frac{-2(1 - 2y_i)(y_i - \frac{1}{2})\mathrm{e}^{-2(y_i - \frac{1}{2})\langle x_i, \theta \rangle}}{(1 +\mathrm{e}^{-2(y_i - \frac{1}{2})\langle x_i, \theta \rangle})^2}
+    &= \frac{-2(1 - 2)(1 - \frac{1}{2})\mathrm{e}^{-2(1 - \frac{1}{2})\langle x_i, \theta \rangle}}{(1 +\mathrm{e}^{-2(1 - \frac{1}{2})\langle x_i, \theta \rangle})^2} \\
+    &= \frac{\mathrm{e}^{-\langle x_i, \theta \rangle}}{(1 +\mathrm{e}^{-\langle x_i, \theta \rangle})^2}
+\end{align*}
+
+Since we need to check if the maximum possible value of $\nabla^2 L (\theta)$ would exceed $\frac{\lambda_{\max}( X^{\mathsf{\scriptscriptstyle{T}}} X )}{4 n } I$,
+we need to find the maximum possible value of this term.
+\bigskip
+
+First, since $\mathrm{e}^{-z_i}$ is always positive, $\frac{\mathrm{e}^{-\langle x_i, \theta \rangle}}{(1 +\mathrm{e}^{-\langle x_i, \theta \rangle})^2} \ge 0$.
+
+Then, let:
+
+\begin{align*}
+    f(x) = \frac{\mathrm{e}^{-x}}{(1 +\mathrm{e}^{-x})^2}
+\end{align*}
+
+Differentiate:
+
+\begin{align*}
+    f'(x) 
+    &= \frac{(-\mathrm{e}^{-x})(1 +\mathrm{e}^{-x})\textcolor{Periwinkle}{^2} - \mathrm{e}^{-x} \cdot 2\textcolor{Periwinkle}{(1 +\mathrm{e}^{-x})}(-\mathrm{e}^{-x})}{(1 +\mathrm{e}^{-x})\textcolor{Periwinkle}{^4}} \\
+    &= \frac{\textcolor{Plum}{(-\mathrm{e}^{-x})}(1 +\mathrm{e}^{-x}) - 2\mathrm{e}^{-x} \textcolor{Plum}{(-\mathrm{e}^{-x})}}{(1 +\mathrm{e}^{-x})^3} \\
+    &= \frac{(-\mathrm{e}^{-x})(1 - \mathrm{e}^{-x})}{(1 +\mathrm{e}^{-x})^3} \\
+\end{align*}
+
+Set $f'(x) = 0$:
+
+\begin{align*}
+    \frac{(-\mathrm{e}^{-x})(1 - \mathrm{e}^{-x})}{(1 +\mathrm{e}^{-x})^3} = 0
+\end{align*}
+
+Since $-\mathrm{e}^{-x} \ne 0$, we must have $1 - \mathrm{e}^{-x} = 0$, which means $\mathrm{e}^{-x} = 1$.
+Therefore, $f(x)$ has critical point at $x = 0$.
+
+Calculate $f(0)$:
+
+\begin{align*}
+    f(0) = \frac{\mathrm{e}^{0}}{(1 +\mathrm{e}^{0})^2} = \frac{1}{4}
+\end{align*}
+
+Check the second derivative:
+\bigskip
+
+\begin{align*}
+    f''(x) 
+    &= \frac{\left[(-\mathrm{e}^{-x})(1 - \mathrm{e}^{-x}) \right]'(1 +\mathrm{e}^{-x})^3 - \left[ (1 +\mathrm{e}^{-x})^3 \right]'\left[(-\mathrm{e}^{-x})(1 - \mathrm{e}^{-x}) \right]}{(1 +\mathrm{e}^{-x})^6} \\
+    &= \frac{\textcolor{Plum}{-\mathrm{e}^{-x}} (1 - 2\mathrm{e}^{-x})(1 +\mathrm{e}^{-x})\textcolor{Plum}{^3} - 3\textcolor{Plum}{(1 +\mathrm{e}^{-x})^2 \mathrm{e}^{-x}} (-1) (-\mathrm{e}^{-x})(1 - \mathrm{e}^{-x})}{(1 +\mathrm{e}^{-x})^6} \\
+    &= \frac{\textcolor{Plum}{\mathrm{e}^{-x} (1 +\mathrm{e}^{-x})^2} \left[ (1 - 2\mathrm{e}^{-x})(1 +\mathrm{e}^{-x}) + 3 (-\mathrm{e}^{-x}) (1 - \mathrm{e}^{-x}) \right]}{(1 +\mathrm{e}^{-x})^6} \\
+    &= \frac{\mathrm{e}^{-x} (1 +\mathrm{e}^{-x})^2 \left[ 1 - 2\mathrm{e}^{-x} + \mathrm{e}^{-x} - 2 \mathrm{e}^{-2x} - 3 \mathrm{e}^{-x} + 3 \mathrm{e}^{-2x} \right]}{(1 +\mathrm{e}^{-x})^6} \\
+    &= \frac{\mathrm{e}^{-x} (1 +\mathrm{e}^{-x})^2 \left[ 1 - 4\mathrm{e}^{-x} + \mathrm{e}^{-2x} \right]}{(1 +\mathrm{e}^{-x})^6} \\
+    &= \frac{\mathrm{e}^{-x} \left[ 1 - 4\mathrm{e}^{-x} + \mathrm{e}^{-2x} \right]}{(1 +\mathrm{e}^{-x})^4}
+\end{align*}
+
+Evaluate at $x = 0$:
+
+\begin{align*}
+    f''(0) = \frac{\mathrm{e}^0 (1 - 4\mathrm{e}^0 + \mathrm{e}^{0})}{(1 + \mathrm{e}^0)^4} = \frac{1 - 4 + 1}{16} = -\frac{1}{8}
+\end{align*}
+
+Since $f''(0) < 0$, $f(x)$ has a local maximum at $x = 0$.
+\bigskip
+
+\textbf{Case.} For \( y_i = 0 \)
+
+\begin{align*}
+    \frac{-2(1 - 2y_i)(y_i - \frac{1}{2})\mathrm{e}^{-2(y_i - \frac{1}{2})\langle x_i, \theta \rangle}}{(1 +\mathrm{e}^{-2(y_i - \frac{1}{2})\langle x_i, \theta \rangle})^2}
+    &= \frac{-2(1 - 0)(0 - \frac{1}{2})\mathrm{e}^{-2(0 - \frac{1}{2})\langle x_i, \theta \rangle}}{(1 +\mathrm{e}^{-2(0 - \frac{1}{2})\langle x_i, \theta \rangle})^2} \\
+    &= \frac{\mathrm{e}^{\langle x_i, \theta \rangle}}{(1 +\mathrm{e}^{\langle x_i, \theta \rangle})^2}
+\end{align*}
+
+Checking the maximum possible value of this term again, let:
+
+\begin{align*}
+    g(x) = \frac{\mathrm{e}^{x}}{(1 +\mathrm{e}^{x})^2}
+\end{align*}
+
+Differentiate:
+
+\begin{align*}
+    g'(x) 
+    &= \frac{\mathrm{e}^{x}(1 +\mathrm{e}^{x})\textcolor{Periwinkle}{^2} - \mathrm{e}^{x} \cdot 2\textcolor{Periwinkle}{(1 +\mathrm{e}^{x})}\mathrm{e}^{x}}{(1 +\mathrm{e}^{x})\textcolor{Periwinkle}{^4}} \\
+    &= \frac{\textcolor{Plum}{\mathrm{e}^{x}}(1 +\mathrm{e}^{x}) - 2\mathrm{e}^{x} \cdot \textcolor{Plum}{\mathrm{e}^{x}}}{(1 +\mathrm{e}^{x})^3} \\
+    &= \frac{\mathrm{e}^{x} (1 - \mathrm{e}^{x})}{(1 +\mathrm{e}^{x})^3} \\
+\end{align*}
+
+Set $g'(x) = 0$:
+
+\begin{align*}
+    \frac{\mathrm{e}^{x} (1 - \mathrm{e}^{x})}{(1 +\mathrm{e}^{x})^3} = 0
+\end{align*}
+
+Since $\mathrm{e}^{x} \ne 0$, we must have $1 - \mathrm{e}^{x} = 0$, which means $\mathrm{e}^{x} = 1$.
+Therefore, $g(x)$ has critical point at $x = 0$.
+\bigskip
+
+Calculate $g(0)$:
+
+\begin{align*}
+    g(0) = \frac{\mathrm{e}^{0}}{(1 +\mathrm{e}^{0})^2} = \frac{1}{4}
+\end{align*}
+
+Check the second derivative:
+
+\begin{align*}
+    g''(x)
+    &= \frac{\left[\mathrm{e}^x(1 - \mathrm{e}^x)\right]'(1 + \mathrm{e}^x)^3 - \left[ (1 + \mathrm{e}^x)^3 \right]'\mathrm{e}^x (1 - \mathrm{e}^x)}{(1 + \mathrm{e}^x)^6} \\
+    &= \frac{\textcolor{Plum}{\mathrm{e}^x}(1 - 2 \mathrm{e}^x)(1 + \mathrm{e}^x)\textcolor{Plum}{^3} - 3 \textcolor{Plum}{\mathrm{e}^x (1 + \mathrm{e}^x)^2}\mathrm{e}^x (1 - \mathrm{e}^x)}{(1 + \mathrm{e}^x)^6} \\
+    &= \frac{\textcolor{Plum}{\mathrm{e}^x(1 + \mathrm{e}^x)^2} \left[ (1 - 2 \mathrm{e}^x)(1 + \mathrm{e}^x) - 3 \mathrm{e}^x (1 - \mathrm{e}^x) \right]}{(1 + \mathrm{e}^x)^6} \\
+    &= \frac{\mathrm{e}^x(1 + \mathrm{e}^x)^2 \left[ 1 - 2 \mathrm{e}^x + \mathrm{e}^x - 2 \mathrm{e}^{2x} - 3 \mathrm{e}^x + 3 \mathrm{e}^{2x} \right]}{(1 + \mathrm{e}^x)^6} \\
+    &= \frac{\mathrm{e}^x(1 + \mathrm{e}^x)^2 \left[ 1 - 4\mathrm{e}^x + \mathrm{e}^{2x} \right]}{(1 + \mathrm{e}^x)^6} \\
+    &= \frac{\mathrm{e}^x \left[ 1 - 4\mathrm{e}^x + \mathrm{e}^{2x} \right]}{(1 + \mathrm{e}^x)^4} \\
+\end{align*}
+
+Evaluate at $x = 0$:
+
+\begin{align*}
+    g''(0) &= \frac{\mathrm{e}^0 (1 - 4\mathrm{e}^0 + \mathrm{e}^{0})}{(1 + \mathrm{e}^0)^4} \\
+    &= \frac{1 - 4 + 1}{16} \\
+    &= -\frac{1}{8}
+\end{align*}
+
+Since $g''(0) < 0$, $g(x)$ has a local maximum at $x = 0$.
+\bigskip
+
+Thus, by the above two cases, 
+we found that the maximum possible value of 
+$\frac{-2(1 - 2y_i)(y_i - \frac{1}{2})\mathrm{e}^{-2(y_i - \frac{1}{2})\langle x_i, \theta \rangle}}{(1 +\mathrm{e}^{-2(y_i - \frac{1}{2})\langle x_i, \theta \rangle})^2}$ 
+is bounded by$\frac{1}{4}$, hence we have:
+
+\begin{align*}
+    u^\intercal \nabla^2 L (\theta) u 
+    &= \frac{1}{n} \sum_{i = 1}^n u^\intercal x_i x_i^\intercal u \textcolor{Thistle}{\frac{-2(1 - 2y_i)(y_i - \frac{1}{2})\mathrm{e}^{-z_i}}{(1 +\mathrm{e}^{-z_i})^2}} \\
+    &\textcolor{Thistle}{\leq} \frac{1}{n} \sum_{i = 1}^n u^\intercal x_i x_i^\intercal u \textcolor{Thistle}{\frac{1}{4}} \\
+    &= \frac{1}{4n} u^\intercal \sum_{i=1}^n (x_i x_i^\intercal) u \\
+\end{align*}
+
+Which we could observe that since:
+
+\begin{align*}
+    X^\intercal X 
+    = \begin{bmatrix}
+        x_1 & x_2 & \cdots & x_n
+    \end{bmatrix}
+    \begin{bmatrix}
+        x_1^\intercal \\ x_2^\intercal \\ \vdots \\ x_n^\intercal
+    \end{bmatrix}
+    = \sum_{i=1}^n x_i x_i^\intercal
+\end{align*}
+
+We have:
+
+\begin{align*}
+    \textcolor{Green}{u^\intercal \nabla^2 L (\theta) u} 
+    &\leq \textcolor{BlueGreen}{\frac{1}{4n} u^\intercal X^\intercal X u} \\
+\end{align*}
+
+By definition, since $X^\intercal X \in \mathbb{R}^{p \times p}$ is a symmetric matrix,
+let $Q(u) = u^\intercal X^\intercal X u$ is its quadratic form.
+\footnote{G. Chen, "Lecture 4: Rayleigh Quotient," San Jose State University, p.4. Available at: \url{https://www.sjsu.edu/faculty/guangliang.chen/Math253S20/lec4RayleighQuotient.pdf}.}
+\bigskip
+
+Then, its Rayleigh quotient is to normalize $Q(u)$ by $u^\intercal u$, 
+and its maximum value is the maximum eigenvalue of $X^\intercal X$ (i.e. $\lambda_{\max}(X^\intercal X)$).
+\footnote{G. Chen, "Lecture 4: Rayleigh Quotient," San Jose State University, p.10-11. Available at: \url{https://www.sjsu.edu/faculty/guangliang.chen/Math253S20/lec4RayleighQuotient.pdf}.}
+:
+
+\begin{align*}
+    &\max_{u \in \mathbb{R}^p} \frac{u^\intercal X^\intercal X u}{u^\intercal u}
+    = \lambda_{\max}(X^\intercal X) \\
+    \Rightarrow \ & u^\intercal X^\intercal X u
+    \leq \lambda_{\max}(X^\intercal X) u^\intercal u \\
+    \Rightarrow \ & \textcolor{BlueGreen}{\frac{1}{4n} u^\intercal X^\intercal X u}
+    \leq \textcolor{orange}{\frac{1}{4n} \lambda_{\max}(X^\intercal X) u^\intercal u} \\
+\end{align*}
+
+Therefore, we have:
+
+\begin{align*}
+    &\textcolor{Green}{u^\intercal \nabla^2 L (\theta) u} 
+    \leq \textcolor{orange}{\frac{1}{4n} \lambda_{\max}(X^\intercal X) u^\intercal u} \\
+    \Rightarrow \ & \nabla^2 L (\theta) \leq \frac{\lambda_{\max}(X^\intercal X)}{4n} I \quad \square
+\end{align*}
 
 
-
-
-
-
-
-\end{document}
+\end{document} 
