@@ -1002,5 +1002,295 @@ Therefore, we have:
     \Rightarrow \ & \nabla^2 L (\theta) \leq \frac{\lambda_{\max}(X^\intercal X)}{4n} I \quad \square
 \end{align*}
 
+\section*{3}
+
+\subsection*{(1)}
+
+The optimization problem is defined as follows:
+
+\begin{align*}
+    x_\star \in \underset{x \in \Delta_d} {\operatorname{argmin}} f ( x ), \quad f ( x ) := - \sum_{i = 1}^n w_i \log \langle a_i, x \rangle , \tag{P}
+\end{align*}
+
+To show that $P$ is convex, same theorem and approach used in problem $1. (1)$ will be used again.
+\bigskip
+
+First, we need to show that the objective function $f$ is convex, and the constraint set $\Delta_d$ is convex.
+
+\begin{center}
+    \textbf{Prove that constraint set $\Delta_d$ is convex}
+\end{center}
+
+To prove this by definition, 
+we need to show that for any $x_1, x_2 \in \Delta_d$ and $\lambda \in [0, 1]$,
+
+\begin{align*}
+    x' = \lambda x_1 + (1 - \lambda) x_2 \in \Delta_d
+\end{align*}
+
+By the definition of $\Delta_d$:
+
+\begin{align*}
+    \Delta_d := \left\{ x = ( x[1], \ldots, x[d] ) \in \mathbb{R}^d \, \middle| \, x[i] \geq 0, \sum_{i = 1}^d x[i] = 1 \right\} 
+\end{align*}
+
+this means that $x'$ should satisfy:
+
+\begin{align*}
+    x'[i] &\geq 0, \quad \forall i \in \{1, \ldots, d\} \\
+    \sum_{i = 1}^d x'[i] &= 1
+\end{align*}
+
+Since $x_1, x_2 \in \Delta_d$, we knew that:
+
+\begin{align*}
+x[i] \geq 0, \quad y[i] \geq 0 \quad \forall i \in \{1, \dots, d\}
+\end{align*}
+
+Also, $\lambda \in [0, 1]$, so both $\lambda$ and $1 - \lambda$ are nonnegative, 
+so for arbitrary $i \in \{1, \ldots, d\}$, we have:
+
+\begin{align*}
+    x'[i] = \lambda x_1[i] + (1 - \lambda) x_2[i] \geq 0
+\end{align*}
+
+Next, we need to check the sum:
+
+\begin{align*}
+    \sum_{i = 1}^d x'[i] 
+    &= \sum_{i = 1}^d \lambda x_1[i] + (1 - \lambda) x_2[i] \\
+    &= \lambda \sum_{i = 1}^d x_1[i] + (1 - \lambda) \sum_{i = 1}^d x_2[i] \\
+    &= \lambda \cdot 1 + (1 - \lambda) \cdot 1 \\
+    &= 1
+\end{align*}
+
+Therefore, $x' \in \Delta_d$, and $\Delta_d$ is convex.
+\bigskip
+
+\begin{center}
+    \textbf{Prove that objective function $f$ is convex}
+\end{center}
+
+To use the theorem in $1. (1)$ , we need to first show that $f$ is twice differentiable,
+then prove that its Hessian matrix is positive semidefinite.
+\bigskip
+
+First, we show that $f$ is twice differentiable.
+
+\begin{align*}
+    &f(x) = - \sum_{i = 1}^n w_i \log \langle a_i, x \rangle \\
+    \Rightarrow \ & \nabla f(x) = -\sum_{i=1}^{n} w_i \frac{a_i}{\langle a_i, x \rangle} \\
+\end{align*}
+
+Since $\langle a_i, x \rangle$ is linear in $x$, 
+and $a_i$ is an entry-wise nonnegative vector $\ni a_i \ne 0$,
+thus $\langle a_i, x \rangle > 0$.
+Therefore, for each point $x$ in the domain of $f$, $\nabla f(x)$ exists,
+and $f$ is differentiable.
+\bigskip
+
+Then we check the second derivative:
+
+\begin{align*}
+    \nabla^2 f(x) 
+    &= - \sum_{i=1}^{n} w_i \nabla \left( \frac{a_i}{\langle a_i, x \rangle} \right) \\
+    &= - \sum_{i=1}^{n} w_i \frac{\nabla (a_i) \langle a_i, x \rangle - a_i \nabla (\langle a_i, x \rangle)}{\langle a_i, x \rangle^2} \\
+    &= - \sum_{i=1}^{n} w_i \frac{0 - a_i a_i^\intercal}{\langle a_i, x \rangle^2} \\
+    &= \sum_{i=1}^{n} w_i \frac{a_i a_i^\intercal}{\langle a_i, x \rangle^2} \\
+\end{align*}
+
+It is trivial that $\nabla^2 f(x)$ exists,
+so we can then check if it is positive semidefinite.
+
+For any $x \in \Delta_d$, we have:
+
+\begin{align*}
+    x^\intercal \nabla^2 f(x) x 
+    &= x^\intercal \sum_{i=1}^{n} w_i \frac{a_i a_i^\intercal}{\langle a_i, x \rangle^2} x \\
+    &= \sum_{i=1}^{n} w_i \frac{x^\intercal a_i a_i^\intercal x}{\langle a_i, x \rangle^2} \\
+    &= \sum_{i=1}^{n} w_i \frac{(a_i^\intercal x)^2}{\langle a_i, x \rangle^2} \ge 0 \\
+\end{align*}
+
+We have the above expression $\ge 0$ since $w_i$ are given nonnegative.
+Therefore, $\nabla^2 f(x)$ is positive semidefinite,
+and $f$ is convex. $\square$
+
+\subsection*{(2)}
+
+As stated in the textbook, 
+the ellipsoid method computes $g(x^{(k)})$ via formula $(3.2)$ in the previous cutting plane method.
+\footnote{Y.-T. Wong, *Techniques in optimization and sampling* (Draft),p.30. Available at: \url{https://github.com/YinTat/optimizationbook}.}
+Which is given by:
+
+\begin{align*}
+    H^{(k)} = \{x \in \mathbb{R}^n \ | \ g(x^{(k)})^\intercal (x - x^{(k)}) \le 0\}
+\end{align*}
+
+Also, in the remark of Problem $3. (1)$
+\footnote{Y.-T. Wong, *Techniques in optimization and sampling* (Draft),p.29. Available at: \url{https://github.com/YinTat/optimizationbook}.}, 
+it said that we set $g(x) = \nabla f(x)$, 
+and the gurantee for $g(\cdot)$ implies that $K$ lies in the half space:
+
+\begin{align*}
+    H^{(k)} = \{y \ | \ g(x^{(k)})^\intercal (y - x^{(k)}) \le 0\}
+\end{align*}
+
+Which means that the mapping $g(\cdot)$ is chosen by calculating the gradient of $f(x)$.
+And this has already been done in the previous subproblem $3. (1)$.
+\bigskip
+
+Therefore, we have:
+
+\begin{align*}
+    g(x) = \nabla f(x) = -\sum_{i=1}^{n} w_i \frac{a_i}{\langle a_i, x \rangle} \quad \square
+\end{align*}
+
+\subsection*{(3)}
+
+From the original definition of the ellipsoid, we have:
+
+\begin{align*}
+    E^{(k)} = \{ y \in \mathbb{R}^n \ | \ (y - x^{(k)})^\intercal (A^{(k)})^{-1} (y - x^{(k)}) \le 1 \} \tag{1}
+\end{align*}
+
+in the proof of Lemma $3.3$, 
+it said that the affine transformation would transform it into the following by setting
+$A^{(k)} = I, \quad x^{(k)} = 0, \quad v ( x^{(k)} ) = e_1$:
+
+\begin{align*}
+    E^{(k)} = \{ y \in \mathbb{R}^n \ | \ y^\intercal y \le 1 \} \tag{2}
+\end{align*}
+
+And would therfore make the halfspace be transformed from its orignal definition (which we mentioned in the previous subproblem $3. (2)$):
+
+\begin{align*}
+    H^{(k)} = \{x \in \mathbb{R}^n \ | \ g(x^{(k)})^\intercal (x - x^{(k)}) \le 0\}
+\end{align*}
+
+to:
+
+\begin{align*}
+    H^{(k)} = \{ x \ | \ x_1 \le 0 \}
+\end{align*}
+
+So, since affine transformation would not change set containment,
+suppose we have $y_1 \in E^{(k)}$, then it will satisfy:
+
+\begin{align*}
+    (y_1 - x^{(k)})^\intercal (A^{(k)})^{-1} (y_1 - x^{(k)}) \le 1 \tag{*}
+\end{align*}
+
+based on the definition in $(1)$, and after some affine transformation:
+
+\begin{align*}
+    y_1' = Ay_1 + b \in E^{(k)} \tag{3}
+\end{align*}
+
+and $y_1'$ satisfies:
+
+\begin{align*}
+    (y_1')^\intercal y_1' \le 1 \tag{4}
+\end{align*}
+
+based on the definition in $(2)$.
+\bigskip
+
+Thus we can derive the following by plugging $(3)$ into $(4)$:
+
+\begin{align*}
+    &(Ay_1 + b )^\intercal (Ay_1 + b ) \le 1 \\
+    \Rightarrow \ & (y_1^\intercal A^\intercal + b^\intercal)(Ay_1 + b) \le 1 \\
+    \Rightarrow \ & \textcolor{Green}{y_1^\intercal A^\intercal Ay_1 + y_1^\intercal A^\intercal b + b^\intercal A y_1 + b^\intercal b \le 1} \\
+\end{align*}
+
+Expand $(*)$:
+
+\begin{align*}
+    &(y_1 - x^{(k)})^\intercal (A^{(k)})^{-1} (y_1 - x^{(k)}) \le 1 \\
+    \Rightarrow \ & (y_1^\intercal - (x^{(k)})^\intercal) (A^{(k)})^{-1} (y_1 - x^{(k)}) \le 1 \\
+    \Rightarrow \ & \left[y_1^\intercal(A^{(k)})^{-1} - (x^{(k)})^\intercal(A^{(k)})^{-1}\right] (y_1 - x^{(k)}) \le 1 \\
+    \Rightarrow \ & \textcolor{orange}{y_1^\intercal(A^{(k)})^{-1} y_1 - y_1^\intercal(A^{(k)})^{-1} x^{(k)} - x^{(k)\intercal}(A^{(k)})^{-1} y_1 + x^{(k)\intercal}(A^{(k)})^{-1} x^{(k)} \le 1} \\
+\end{align*}
+
+Compare the two expressions, and we can observe that:
+
+\begin{align*}
+    &\textcolor{Green}{y_1^\intercal A^\intercal Ay_1} = \textcolor{orange}{y_1^\intercal(A^{(k)})^{-1} y_1} \\
+    \Rightarrow \ & A^\intercal A = (A^{(k)})^{-1} \\
+    \Rightarrow \ & \textcolor{orange}{- y_1^\intercal(A^{(k)})^{-1} x^{(k)}} = - y_1^\intercal A^\intercal A x^{(k)} = \textcolor{Green}{y_1^\intercal A^\intercal b} \\
+    \Rightarrow \ & b = -A x^{(k)}
+\end{align*}
+
+Verify the result:
+
+\begin{align*}
+    &\textcolor{orange}{- x^{(k)\intercal}(A^{(k)})^{-1} y_1} = - x^{(k)\intercal} A^\intercal A y_1 = \textcolor{Green}{b^\intercal A y_1} \\
+    &\textcolor{orange}{x^{(k)\intercal}(A^{(k)})^{-1} x^{(k)}} = (-A x^{(k)})^\intercal (-A x^{(k)}) = \textcolor{Green}{b^\intercal b}
+\end{align*}
+
+Therefore, we have:
+
+\begin{align*}
+    \begin{cases}
+        A^\intercal A = (A^{(k)})^{-1} \\
+        b = -A x^{(k)}
+    \end{cases}
+\end{align*}
+
+To further derive $A$, we knew that $A$ is invertible,
+and $A^\intercal A = (A^\intercal A)^\intercal$, so $A^\intercal A$ is Hermitian.
+Also, consider any $u \in \mathbb{R}^n, \quad u \ne 0$, we have:
+
+\begin{align*}
+    u^\intercal (A^\intercal A) u = (A u)^\intercal (A u)  = \|A u\|^2 > 0
+\end{align*}
+
+Note that we have $>$ since $A$ is invertible and $u \ne 0$.
+Thus, $A^\intercal A$ is positive definite.
+\bigskip
+
+Using the above result ($A^\intercal A$: positive definite, Hermitian),
+we knew that $A^\intercal A$ can be written as a product of its square root matrix.
+\footnote{Wikipedia contributors, "Cholesky decomposition," \textit{Wikipedia, The Free Encyclopedia}, Available at: \url{https://en.wikipedia.org/wiki/Cholesky_decomposition}. Accessed: Mar. 10, 2025.}
+
+\begin{align*}
+    (A^\intercal A)^{\frac{1}{2}} = ((A^{(k)})^{-1})^{\frac{1}{2}}
+\end{align*}
+
+Therefore, we have:
+
+\begin{align*}
+    A = ((A^{(k)})^{-1})^{\frac{1}{2}}
+\end{align*}
+\footnote{Wikipedia contributors, "Square root of a matrix," \textit{Wikipedia, The Free Encyclopedia}, Available at: \url{https://en.wikipedia.org/wiki/Square_root_of_a_matrix}. Accessed: Mar. 10, 2025.}
+
+And we conclude that the affine transformation is given by:
+
+\begin{align*}
+    A y_1 + b \quad \text{ where }
+    A = ((A^{(k)})^{-1})^{\frac{1}{2}}, \quad b = -A x^{(k)} \quad \square
+\end{align*}
+
+
+
+\begin{comment}
+\begin{align*}
+    y_1 = A^{-1}(y_1' - b) 
+\end{align*}
+
+since $A$ is guaranteed to be invertible by the definition of affine transformation.
+Plugging it into $(*)$, we have:
+
+\begin{align*}
+    &(A^{-1}(y_1' - b) - x^{(k)})^\intercal (A^{(k)})^{-1} (A^{-1}(y_1' - b) - x^{(k)}) \le 1 \\
+    \Rightarrow \ & (A^{-1}y_1' - A^{-1}b - x^{(k)})^\intercal \textcolor{orange}{(A^{(k)})^{-1}} (A^{-1}y_1' - A^{-1}b - x^{(k)}) \le 1 \\
+    \Rightarrow \ & \left[((y_1')^\intercal (A^{-1})^\intercal\textcolor{orange}{(A^{(k)})^{-1}} - b^\intercal(A^{-1})^\intercal\textcolor{orange}{(A^{(k)})^{-1}} - (x^{(k)})^\intercal\textcolor{orange}{(A^{(k)})^{-1}}) \right]
+    (A^{-1}y_1' - A^{-1}b - x^{(k)}) \le 1 \\
+\end{align*}
+\end{comment}
+
+
+
+\subsection*{(4)}
 
 \end{document} 
