@@ -283,8 +283,6 @@ Thus, we should compute the gradient of the negative $\log$-likelihood w.r.t. $\
 \end{equation*}
 \end{comment}
 
-\textcolor{red}{Check this part! (about the 1)}
-\bigskip
 
 Since $\mathrm{e}^{(- 2y_i)}$ evaluates to $1$ when $y_i = 0$ and is a small constant when $y_i = 1$,
 also, taking the average (multiplying by $\frac{1}{n}$) will not change the result,
@@ -1292,5 +1290,49 @@ Plugging it into $(*)$, we have:
 
 
 \subsection*{(4)}
+
+\subsection*{(5)}
+
+In algorithm $5$, the initial ellipsoid $E^{(0)}$ is given by:
+
+\begin{align*}
+    E^{(0)} = \{ y \in \mathbb{R}^n \ | \ (y - x^{(0)})^\intercal (A^{(0)})^{-1} (y - x^{(0)}) \le 1 \}
+\end{align*}
+
+and in theorem $3.7$, it said that $\Omega$ is any set that is a subset of $E^{(0)}$,
+therefore, if we choose some point $y_0 \in \Omega \subset E^{(0)}$, 
+where $y_0 \notin \Delta_d$, for example, there are negative values in some dimension of $y_0$ 
+(i.e. $y_0[k_i] < 0$ for some $k_i \in \{1, \ldots, d\}, \quad i = 1, \ldots, n$), such that:
+
+\begin{align*}
+    \langle a_i, y_0 \rangle < 0, \quad \text{for some } i \in \{1, \ldots, n\}
+\end{align*}
+
+then $f(x)$ is undefined at $x = y_0$,
+since the definition of $f(x)$ ($f ( x ) := - \sum_{i = 1}^n w_i \log \langle a_i, x \rangle$) contains logarithm of $\langle a_i, x \rangle$.
+
+Therefore, we can not imply the inequality given in the proof:
+
+\begin{align*}
+    f(x^{(i)}) \le f(y) \le (1 - \alpha) f(x^*) + \alpha f(z)
+\end{align*}
+
+by the convexity of $f$, since $f$ is not well-defined everywhere in $E^{(0)}$.
+\bigskip
+
+Also, the feasible set of $P$ (the probability simplex) is given by:
+
+\begin{align*}
+    \Delta_d := \left\{ x = ( x[1], \ldots, x[d] ) \in \mathbb{R}^d \, \middle| \, x[i] \geq 0, \sum_{i = 1}^d x[i] = 1 \right\} 
+\end{align*}
+
+the set $\Delta_d$ is in fact not of dimension $d$, but $d - 1$, 
+since the last dimension is determined by $1 - \sum_{i = 1}^{d - 1} x[i]$.
+\bigskip
+
+Therefore the mapping $V$ can not be properly defined,
+since $V$ maps from subsets of $\mathbb{R}^n$ and $\Delta_d \not\subseteq \mathbb{R}^n$. 
+\footnote{I asked ChatGPT for explaining and giving possible reasons but formulated the above proof by myself without copying anything.}
+$\square$
 
 \end{document} 
