@@ -1,0 +1,124 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage[]{amsthm} 
+\usepackage[]{amssymb} 
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{comment}
+\usepackage[dvipsnames]{xcolor}
+\usepackage[thinc]{esdiff}
+\newtheorem*{theorem}{Theorem}
+
+\title{Optimization Algorithms: HW1}
+\author{Lo Chun, Chou \\ R13922136}
+\date\today
+
+\begin{document}
+\setlength{\parindent}{0pt}
+\maketitle 
+
+\section*{1}
+
+\section*{2}
+
+Given a twice differentiable function $\varphi: \mathbb{R}^d \to [- \infty, \infty]$, 
+assume that it is logarithmically homogeneous, 
+then by the definition, the following holds:
+
+\begin{align*}
+    \varphi ( \gamma x ) = \varphi (x) - \log \gamma, \quad \forall x \in \mathbb{R}^d, \gamma > 0 \tag{1}
+\end{align*}
+
+\textcolor{blue}{\underline{Claim: $\langle \nabla \varphi (x), x \rangle = - 1$ } }
+\bigskip
+
+To derive the first equation, we first define the following:
+
+\begin{align*}
+    F(\gamma) = \textcolor{orange}{\varphi (\gamma x)}
+\end{align*}
+
+Then the original equation $(1)$ would become:
+
+\begin{align*}
+    F(\gamma) = \textcolor{Green}{\varphi (x) - \log \gamma}
+\end{align*}
+
+Taking the derivative w.r.t. $\gamma$ on both sides, we get:
+
+\begin{align*}
+    \frac{dF}{d\gamma} &= \frac{d}{d\gamma} \textcolor{orange}{\varphi (\gamma x)} = \nabla \varphi (\gamma x) \cdot x = \langle \nabla \varphi (\gamma x), x \rangle \tag{2}\\
+    \frac{dF}{d\gamma} &= \frac{d}{d\gamma} (\textcolor{Green}{\varphi (x) - \log \gamma}) = - \frac{1}{\gamma} \tag{3}
+\end{align*}
+
+Thus by $(2)$ and $(3)$, we have:
+
+\begin{align*}
+    \langle \nabla \varphi (\gamma x), x \rangle = - \frac{1}{\gamma}
+\end{align*}
+Then by plugging in $\gamma = 1$, we have:
+
+\begin{align*}
+    \langle \nabla \varphi (x), x \rangle = - 1 \qquad \square
+\end{align*}
+
+\textcolor{blue}{\underline{Claim: $\nabla \varphi (x) = - \nabla^2 \varphi ( x ) x$ } }
+\bigskip
+
+From the previous part, we have:
+
+\begin{align*}
+    \nabla \varphi (x)^T x = - 1
+\end{align*}
+
+Compute the gradient of both sides, for the left hand side, we have:
+
+\begin{align*}
+    \textcolor{orange}{\nabla(}\nabla \varphi (x)^T x\textcolor{orange}{)}
+    &= \textcolor{orange}{\nabla (}\nabla \varphi (x)\textcolor{orange}{)}^T x + \nabla \varphi (x)^T \textcolor{orange}{\nabla} x  \\
+    &= \nabla^2 \varphi (x) x + \nabla \varphi (x)^T \nabla x  \\
+\end{align*}
+
+For the right hand side, we have:
+
+\begin{align*}
+    \nabla (- 1) = 0
+\end{align*}
+
+Thus we have:
+
+\begin{align*}
+    &\nabla^2 \varphi (x) x + \nabla \varphi (x)^T \nabla x = 0 \\
+    \Rightarrow &\nabla \varphi (x)^T \nabla x = - \nabla^2 \varphi (x) x \\
+    \Rightarrow &\nabla \varphi (x)^T I_d = - \nabla^2 \varphi (x) x \\
+    \Rightarrow &\nabla \varphi (x) = - \nabla^2 \varphi (x) x \qquad \square
+\end{align*}
+
+\textcolor{blue}{\underline{Claim: $\langle x, \nabla^2 \varphi (x) x \rangle = 1$ } }
+\bigskip
+
+From the previous part, we have:
+
+\begin{align*}
+    \nabla \varphi (x) = - \nabla^2 \varphi (x) x
+\end{align*}
+
+Multiply both sides by $x^T$, we have:
+
+\begin{align*}
+    x^T \nabla \varphi (x) = - x^T \nabla^2 \varphi (x) x
+\end{align*}
+
+Which is equivalent to the following by using $\langle \nabla \varphi (x), x \rangle = - 1$:
+
+\begin{align*}
+    \langle x, \nabla^2 \varphi (x) x \rangle = - \langle x, \nabla \varphi (x) \rangle = (-1) \times (-1) = 1 \qquad \square
+\end{align*}
+
+
+
+
+
+\end{document}
