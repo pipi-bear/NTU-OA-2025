@@ -4,11 +4,13 @@
 \usepackage[]{amsthm} 
 \usepackage[]{amssymb} 
 \usepackage{amsmath}
+\DeclareMathOperator{\domain}{dom}
 \usepackage{graphicx}
 \usepackage{hyperref}
 \usepackage{comment}
 \usepackage[dvipsnames]{xcolor}
 \usepackage[thinc]{esdiff}
+\usepackage{tcolorbox}
 \newtheorem*{theorem}{Theorem}
 
 \title{Optimization Algorithms: HW1}
@@ -19,9 +21,32 @@
 \setlength{\parindent}{0pt}
 \maketitle 
 
+\tcbset{
+    greenbox/.style={
+        colback=SpringGreen!20,
+        colframe=SpringGreen!80,
+        coltitle=black,
+        sharp corners
+    },
+    bluebox/.style={
+        colback=SkyBlue!20,
+        colframe=SkyBlue!80,
+        coltitle=black,
+        sharp corners
+    },
+    yellowbox/.style={
+        colback=yellow!10,
+        colframe=yellow!80,
+        coltitle=black,
+        sharp corners
+    }
+}
+
 \section*{1}
 
 \section*{2}
+
+\subsection*{(1)}
 
 Given a twice differentiable function $\varphi: \mathbb{R}^d \to [- \infty, \infty]$, 
 assume that it is logarithmically homogeneous, 
@@ -117,8 +142,167 @@ Which is equivalent to the following by using $\langle \nabla \varphi (x), x \ra
     \langle x, \nabla^2 \varphi (x) x \rangle = - \langle x, \nabla \varphi (x) \rangle = (-1) \times (-1) = 1 \qquad \square
 \end{align*}
 
+\subsection*{(2)}
 
+Suppose that $\varphi: \mathbb{R}^d \to [- \infty, \infty]$ is a twice differentiable function, 
+and is strictly convex and logarithmically homogeneous, then the following holds by the definition:
 
+\begin{align*}
+    &\nabla^2 \varphi (x) > 0 \quad \forall x \in \mathbb{R}^d \\
+    &\varphi ( \gamma x ) = \varphi (x) - \log \gamma, \quad \forall x \in \mathbb{R}^d, \gamma > 0.
+\end{align*}
+
+Also, we have the following properties from the previous subsection:
+
+\begin{align*}
+    \langle \nabla \varphi (x), x \rangle = - 1 \tag{1}\\
+    \nabla \varphi (x) = - \nabla^2 \varphi ( x ) x \tag{2}\\
+    \langle x, \nabla^2 \varphi (x) x \rangle = 1 \tag{3}
+\end{align*}
+
+\textcolor{blue}{\underline{Claim: $\nabla^2 \varphi ( x ) \geq \nabla \varphi ( x ) \left( \nabla \varphi (x) \right)^T , \quad \forall x \in \operatorname{dom}\, \varphi $} }
+\bigskip
+
+The claim is equivalent to proving that:
+
+\begin{align*}
+    \nabla^2 \varphi ( x ) - \nabla \varphi ( x ) \left( \nabla \varphi (x) \right)^T \succeq 0
+\end{align*}
+
+where $\succeq 0$ denotes positive semidefinite.
+
+Let $z$ be any vector in $\mathbb{R}^d$, then we have:
+
+\begin{align*}
+    z^T \left( \nabla^2 \varphi ( x ) - \nabla \varphi ( x ) \left( \nabla \varphi (x) \right)^T \right) z
+    &= z^T \nabla^2 \varphi ( x ) z - z^T \nabla \varphi ( x ) \left( \nabla \varphi (x) \right)^T z \\
+    &= z^T \nabla^2 \varphi ( x ) z - \left( \nabla \varphi ( x )^T z \right)^2 \tag{*}\\
+\end{align*}
+
+\textbf{\underline{Case 1: $x = z$}}
+\bigskip
+
+If $x = z$, then $(*)$ becomes the following using \textcolor{orange}{$(1)$} and \textcolor{Green}{$(2)$}:
+
+\begin{align*}
+    z^T \left( \nabla^2 \varphi ( x ) - \nabla \varphi ( x ) \left( \nabla \varphi (x) \right)^T \right) z 
+    &= z^T \textcolor{Green}{\nabla^2 \varphi ( x ) x} - (\textcolor{orange}{\langle \nabla \varphi ( x ), x \rangle})^2 \\
+    &= x^T \textcolor{Green}{(- \nabla \varphi ( x ))} - (\textcolor{orange}{-1})^2 \\
+    &= x^T (- \nabla \varphi ( x )) - 1 \\
+    &= - \textcolor{orange}{\langle \nabla \varphi ( x ), x \rangle} - 1 \\
+    &= - \textcolor{orange}{(-1)} - 1 \\
+    &= 0 \geq 0 
+\end{align*}
+
+\textbf{\underline{Case 2: $x \neq z$}}
+\bigskip
+
+Using \textcolor{Green}{$(2)$} to replace $\nabla \varphi (x)$ with $- \nabla^2 \varphi ( x ) x$ in $(*)$, 
+and using the fact that $(\nabla^2 \varphi ( x ))^T = \nabla^2 \varphi ( x )$ (the Hessian is symmetric):
+
+\begin{align*}
+    z^T \left( \nabla^2 \varphi ( x ) - \nabla \varphi ( x ) \left( \nabla \varphi (x) \right)^T \right) z 
+    &= z^T \nabla^2 \varphi ( x ) z - \left( \textcolor{Green}{\nabla \varphi ( x )}^T z \right)^2 \\
+    &= z^T \nabla^2 \varphi ( x ) z - \left( \textcolor{Green}{(- \nabla^2 \varphi ( x ) x)}^T z \right)^2 \\
+    &= z^T \nabla^2 \varphi ( x ) z - \left( - \underbrace{x^T}_{A^T} \underbrace{(\nabla^2 \varphi ( x ))^T z }_{B} \right)^2 \\
+    &= z^T \nabla^2 \varphi ( x ) z - \underbrace{[(\nabla^2 \varphi ( x ))^T z]^T x x^T [(\nabla^2 \varphi ( x ))^T z]}_{B^TAA^TB} \\
+    &= z^T \nabla^2 \varphi ( x ) z - [\textcolor{blue}{x^T (\nabla^2 \varphi ( x ))^T z}]^T [\textcolor{blue}{x^T (\nabla^2 \varphi ( x ))^T z}] \\
+    &= z^T \nabla^2 \varphi ( x ) z - ||\textcolor{blue}{x^T (\nabla^2 \varphi ( x ))^T z}||^2 \\
+    &= z^T \nabla^2 \varphi ( x ) z - ||x^T (\nabla^2 \varphi ( x )) z||^2 
+\end{align*}
+
+Let $H = \nabla^2 \varphi ( x )$, then the above expression is equivalent to:
+
+\begin{align*}
+    z^T H z - (x^T H z)^2
+\end{align*}
+
+Let's first check that we can define the function 
+\begin{align*}
+    h: \mathbb{R}^d \times  \mathbb{R}^d \to \mathbb{R}, \quad h(u, v) = u^T H v
+\end{align*}
+
+as the inner product on $\mathbb{R}^d$.
+\footnote{H. Amann and J. Escher, \textit{Analysis I}, 1st ed., Birkhäuser Basel, 2005, p.~153.}
+\bigskip
+
+Using the fact that we assumed that $\nabla^2 \varphi (x) > 0$, so $H$ is positive definite, 
+thus by theorem
+\footnote{``Square root of a matrix'', Wikipedia, \url{https://en.wikipedia.org/wiki/Square_root_of_a_matrix}}, 
+there exists a one and only one positive definite matrix $H^{1/2}$ (also symmetric) such that $H = H^{1/2} H^{1/2}$.
+
+\begin{itemize}
+    \item \textbf{Symmetry:} For any $u, v \in \mathbb{R}^d$, we have:
+    \begin{align*}
+        h(u, v) 
+        &= u^T H v \\
+        &= u^T H^{1/2} H^{1/2} v \\
+        &= (H^{1/2} u)^T (H^{1/2} v) \\
+        &= (H^{1/2} v)^T (H^{1/2} u) \\
+        &= v^T H^{1/2} H^{1/2} u \\
+        &= v^T H u \\
+        &= h(v, u)
+    \end{align*}
+    \item \textbf{Linearity:} For any $\lambda, \mu \in \mathbb{R}$ and $t, u, v \in \mathbb{R}^d$, we have:
+    \begin{align*}
+        h(t, \lambda u + \mu v) 
+        &= t^T H (\lambda u + \mu v) \\
+        &= t^T H (\lambda u + \mu v) \\
+        &= t^T H (\lambda u) + t^T H (\mu v) \\
+        &= \lambda t^T H u + \mu t^T H v \\
+        &= \lambda h(t, u) + \mu h(t, v)
+    \end{align*}
+    \item \textbf{Positive definiteness:} For any $u \in \mathbb{R}^d$, we have:
+    \begin{align*}
+        h(u, u) = u^T H u > 0 \quad \text{since $H$ is positive definite}
+    \end{align*}
+\end{itemize}
+\footnote{I later found that we have 
+"A function $\langle \cdot, \cdot \rangle : \mathbb{R}^n \times \mathbb{R}^n \to \mathbb{R}$ 
+is an inner product on $\mathbb{R}^n$ if and only if there exists a symmetric positive-definite matrix $\mathbf{M}$ 
+such that $\langle x, y \rangle = x^\top \mathbf{M} y$ for all $x, y \in \mathbb{R}^n$."
+on ``Inner product space'', Wikipedia, \url{https://en.wikipedia.org/wiki/Inner_product_space}}
+
+Therefore, we have:
+
+\begin{align*}
+    z^T H z - (x^T H z)^2 
+    &= \langle z, z \rangle_H - \langle x, z \rangle_H^2 \\
+\end{align*}
+
+Using the Cauchy-Schwarz inequality
+\footnote{H. Amann and J. Escher, \textit{Analysis I}, 1st ed., Birkhäuser Basel, 2005, p.~154.}:
+\bigskip
+
+\begin{tcolorbox}[greenbox, title = Cauchy-Schwarz inequality]
+    Let $(E, (\cdot \mid \cdot))$ be an inner product space. Then  
+    \begin{align*}
+        |(x \mid y)|^2 \leq (x \mid x)(y \mid y), \qquad x,y \in E
+    \end{align*}
+\end{tcolorbox}
+
+We can derive the later equation using the fact that:
+
+\begin{align*}
+    \langle x, x \rangle_H = x^T H x = x^T \nabla^2 \varphi ( x ) x = 1
+\end{align*}
+
+(this is because property $(3)$)
+
+So we have:
+
+\begin{align*}
+    \langle x, z \rangle_H^2 
+    &\leq \langle x, x \rangle_H \langle z, z \rangle_H \\
+    &= 1 \times \langle z, z \rangle_H \\
+    &= \langle z, z \rangle_H
+\end{align*}
+
+Thus we have:
+
+\begin{align*}
+    z^T H z - (x^T H z)^2 \geq 0 \qquad \square
+\end{align*}
 
 
 \end{document}
