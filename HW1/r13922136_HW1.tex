@@ -304,5 +304,178 @@ Thus we have:
     z^T H z - (x^T H z)^2 \geq 0 \qquad \square
 \end{align*}
 
+\subsection*{(3)}
+
+We need to prove the following equivalence:
+
+\begin{align*}
+    & \text{(1)} \quad e^{-\varphi(x)} \text{ is concave} \\
+    \iff \quad & \text{(2)} \quad \varphi(y) \geq \varphi(x) - \log(1 - \langle \nabla \varphi(x), y - x \rangle), \quad \forall x, y \in \operatorname{dom}(\varphi) \\
+    \iff \quad & \text{(3)} \quad \nabla^2 \varphi(x) \succeq \nabla \varphi(x) \nabla \varphi(x)^\top, \quad \forall x \in \operatorname{dom}(\varphi)
+\end{align*}
+
+\textbf{\underline{(1) $\implies$ (2)}}
+\bigskip
+
+Let $f: \mathbb{R}^d \to \mathbb{R}$ be defined as $f(x) = e^{-\varphi(x)}$.
+\bigskip
+
+Suppose that $f(x) = e^{-\varphi(x)}$ is concave, then by the definition of concavity
+\footnote{Y. Nesterov, \textit{Introductory Lectures on Convex Optimization: A Basic Course}, 1st ed., Springer, New York, NY, 2004, p.~52.}:
+
+\begin{tcolorbox}[bluebox, title = Convex]
+    A continuously differentiable function $f(x)$ is called convex on $\mathbb{R}^n$ if for any $x, y \in \mathbb{R}^n$, we have:
+    \begin{align*}
+        f(y) \geq f(x) + \langle \nabla f(x), y - x \rangle
+    \end{align*}
+    If $-f(x)$ is convex, then $f(x)$ is concave.
+\end{tcolorbox}
+
+this means that our assumption is equivalent to saying that $-e^{-\varphi(x)}$ is convex. 
+Let $g(x) = -f(x) = -e^{-\varphi(x)}$ a convex function, 
+using the fact that:
+\begin{align*}
+    \nabla g(x) = \frac{d}{dx} (-e^{-\varphi(x)}) = e^{-\varphi(x)} \nabla \varphi(x)
+\end{align*}
+
+we have the following:
+\bigskip
+
+For any $x, y \in \mathbb{R}^d$:
+
+\begin{align*}
+    &g(y) \geq g(x) + \langle \nabla g(x), y - x \rangle \\
+    \Rightarrow \ &-e^{-\varphi(y)} \geq -e^{-\varphi(x)} + \langle e^{-\varphi(x)} \nabla \varphi(x), y - x \rangle \\
+    \Rightarrow \ &e^{-\varphi(y)} \leq e^{-\varphi(x)} - e^{-\varphi(x)} \langle \nabla \varphi(x), y - x \rangle \\
+    \Rightarrow \ &e^{-\varphi(y)} \leq e^{-\varphi(x)} (1 - \langle \nabla \varphi(x), y - x \rangle) \\
+    \Rightarrow \ &- \varphi(y) \leq -\varphi(x) + \log (1 - \langle \nabla \varphi(x), y - x \rangle) \\
+    \Rightarrow \ &\varphi(y) \geq \varphi(x) - \log (1 - \langle \nabla \varphi(x), y - x \rangle)
+\end{align*}
+
+\textbf{\underline{(2) $\implies$ (3)}}
+\bigskip
+
+Suppose $(2)$ holds, so we have:
+
+\begin{align*}
+    \varphi(y) \geq \varphi(x) - \log (1 - \langle \nabla \varphi(x), y - x \rangle), \quad \forall x, y \in \operatorname{dom}(\varphi)
+\end{align*}
+
+By plugging in $y = x + h \ (h = y - x)$, with $||h|| \rightarrow 0$, we have:
+
+\begin{align*}
+    \varphi(x + h) \geq \varphi(x) - \log (1 - \langle \nabla \varphi(x), h \rangle) \tag{1}
+\end{align*}
+
+Then by using the second-order approximation
+\footnote{Y. Nesterov, \textit{Introductory Lectures on Convex Optimization: A Basic Course}, 1st ed., Springer, New York, NY, 2004, p.~19.}:
+
+\begin{tcolorbox}[bluebox, title = Second-order approximation]
+    Let $f$ be twice differentiable at $\bar{x}$. Then
+    \begin{align*}
+        f(y) = f(\bar{x}) + \langle \nabla f(\bar{x}), y - \bar{x} \rangle + \frac{1}{2} \langle\nabla^2 f(\bar{x}) (y - \bar{x}), y - \bar{x} \rangle + o(||y - \bar{x}||^2)
+    \end{align*}
+\end{tcolorbox}
+
+Since $\varphi$ is twice differentiable on its domain, we have:
+
+\begin{align*}
+    \varphi(x + h) = \varphi(x) + \langle \nabla \varphi(x), h \rangle + \frac{1}{2} \langle\nabla^2 \varphi(x) h, h \rangle + o(||h||^2) \tag{2}
+\end{align*}
+
+Combining $(1)$ and $(2)$, we have:
+
+\begin{align*}
+    &\textcolor{orange}{\varphi(x)} + \langle \nabla \varphi(x), h \rangle + \frac{1}{2} \langle\nabla^2 \varphi(x) h, h \rangle + o(||h||^2) 
+    \geq \textcolor{orange}{\varphi(x)} - \log (1 - \langle \nabla \varphi(x), h \rangle) \\
+    \Rightarrow \ &\langle \nabla \varphi(x), h \rangle + \frac{1}{2} \langle\nabla^2 \varphi(x) h, h \rangle + o(||h||^2)  \geq - \textcolor{Green}{\log (1 - \langle \nabla \varphi(x), h \rangle)}  \\
+    \Rightarrow \ &\langle \nabla \varphi(x), h \rangle + \frac{1}{2} \langle\nabla^2 \varphi(x) h, h \rangle + o(||h||^2)  \geq - \textcolor{Green}{(-\sum_{n=1}^{\infty} \frac{\langle \nabla \varphi(x), h \rangle^n}{n})}  \\
+    \Rightarrow \ &\textcolor{blue}{\langle \nabla \varphi(x), h \rangle} + \frac{1}{2} \langle\nabla^2 \varphi(x) h, h \rangle + o(||h||^2)  \geq \textcolor{blue}{\langle \nabla \varphi(x), h \rangle} + \sum_{n=2}^{\infty} \frac{\langle \nabla \varphi(x), h \rangle^n}{n}  \\
+    \Rightarrow \ &\frac{1}{2} \langle\nabla^2 \varphi(x) h, h \rangle + o(||h||^2)  \geq \sum_{n=2}^{\infty} \frac{\langle \nabla \varphi(x), h \rangle^n}{n}  \\
+    \Rightarrow \ &\frac{1}{2} \langle\nabla^2 \varphi(x) h, h \rangle + o(||h||^2)  \geq \frac{\langle \nabla \varphi(x), h \rangle^2}{2} + \frac{\langle \nabla \varphi(x), h \rangle^3}{3} + \cdots \tag{*}\\
+\end{align*}
+
+Examine the terms on the right hand side by Cauchy-Schwarz inequality:
+
+\begin{align*}
+    \frac{(\textcolor{orange}{\langle \nabla \varphi(x), h \rangle})^3}{3} 
+    &\textcolor{orange}{\leq} \frac{(\textcolor{orange}{||\nabla \varphi(x)|| \cdot ||h||})^3}{3} \\
+\end{align*}
+
+Since $||h|| \rightarrow 0$ by our assumption, we can write:
+
+\begin{align*}
+    \frac{\langle \nabla \varphi(x), h \rangle^2}{2} + \frac{\langle \nabla \varphi(x), h \rangle^3}{3} + \cdots = o(||h||^2)
+\end{align*}
+
+Substituting this bound back into $(*)$, we have:
+
+\begin{align*}
+    &\frac{1}{2} \langle\nabla^2 \varphi(x) h, h \rangle + o(||h||^2)  \geq \frac{\langle \nabla \varphi(x), h \rangle^2}{2} + o(||h||^2) \\
+    \Rightarrow \ & \ \frac{1}{2} \langle\nabla^2 \varphi(x) h, h \rangle  \geq \frac{\langle \nabla \varphi(x), h \rangle^2}{2} \\
+    \Rightarrow \ & \ \langle\nabla^2 \varphi(x) h, h \rangle  \geq \langle \nabla \varphi(x), h \rangle^2 \\
+    \Rightarrow \ & \ (\nabla^2 \varphi(x) h)^T h \geq (\nabla \varphi(x)^T h)^T (\nabla \varphi(x)^T h) \\
+    \Rightarrow \ & \ h^T \textcolor{blue}{(\nabla^2 \varphi(x))^T} h \geq h^T \textcolor{blue}{\nabla \varphi(x) (\nabla \varphi(x))^T} h \\
+    \Rightarrow \ & \ h^T \textcolor{blue}{((\nabla^2 \varphi(x))^T - \nabla \varphi(x) (\nabla \varphi(x))^T)} h \geq 0 \\
+    \Rightarrow \ & \ \nabla^2 \varphi(x) - \nabla \varphi(x) (\nabla \varphi(x))^T \succeq 0 \qquad \qquad \text{(since the Hessian is symmetric)}
+\end{align*}
+
+Thus, we have proved that:
+
+\begin{align*}
+    \nabla^2 \varphi(x) \geq \nabla \varphi(x) (\nabla \varphi(x))^T, \quad \forall x,y \in \domain \varphi
+\end{align*}
+
+\textbf{\underline{(3) $\implies$ (1)}}
+\bigskip
+
+Suppose $(3)$ holds, so we have:
+
+\begin{align*}
+    \nabla^2 \varphi(x) \geq \nabla \varphi(x) (\nabla \varphi(x))^T, \quad \forall x,y \in \domain \varphi
+\end{align*}
+
+Since we need to show that $e^{-\varphi(x)}$ is concave, similar to the previous proof, we can define $g(x) = -f(x) = -e^{-\varphi(x)} \ (\text{ where } f(x) = e^{-\varphi(x)})$,
+and show that $g(x)$ is convex.
+\bigskip
+
+By theorem
+\footnote{Y. Nesterov, \textit{Introductory Lectures on Convex Optimization: A Basic Course}, 1st ed., Springer, New York, NY, 2004, p.~55.}, 
+we have:
+\begin{tcolorbox}[greenbox, title = Theorem 2.1.4]
+    Two times continuously differentiable function $f \in \mathcal{F}^2(\mathbb{R}^n)$ iff for any $x \in \mathbb{R}^n$, we have:
+    \begin{align*}
+        f''(x) \succeq 0
+    \end{align*}
+\end{tcolorbox}
+
+Therefore, we need to show that $\nabla^2 g(x) \succeq 0$.
+We derive the following using the Scalar-by-vector identity
+\footnote{``Matrix calculus'', Wikipedia, \url{https://en.wikipedia.org/wiki/Matrix_calculus}}:
+\bigskip
+
+If $u = u(x)$ and $v = v(x)$ are vector functions of $x$, then:
+\begin{align*}
+    \nabla (u \cdot v) = (\nabla u) v^T + u^T (\nabla v)
+\end{align*}
+
+Hence, we have:
+
+\begin{align*}
+    \nabla^2 g(x) 
+    &= \nabla(e^{-\varphi(x)} \nabla \varphi(x)) \\
+    &= \left[ \frac{d}{dx}(e^{-\varphi(x)}) \right] (\nabla \varphi(x))^T + e^{-\varphi(x)} \nabla^2 \varphi(x) \\
+    &= \textcolor{orange}{-} e^{-\varphi(x)} \textcolor{orange}{(\nabla \varphi(x))(\nabla \varphi(x))^T} + e^{-\varphi(x)} \textcolor{orange}{\nabla^2 \varphi(x)} \\
+    &= e^{-\varphi(x)} \left[ \textcolor{orange}{\nabla^2 \varphi(x) - (\nabla \varphi(x))(\nabla \varphi(x))^T} \right]
+\end{align*}
+
+By our assumption, we knew that $\nabla^2 \varphi(x) - \nabla \varphi(x) (\nabla \varphi(x))^T \succeq 0$,
+and multiplying by $e^{-\varphi(x)} > 0$ would not change the sign, therefore we have:
+
+\begin{align*}
+    \nabla^2 g(x) \succeq 0
+\end{align*}
+
+And the equivalence of the three statements is proved. $\qquad \square$
 
 \end{document}
