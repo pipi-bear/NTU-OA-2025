@@ -478,4 +478,129 @@ and multiplying by $e^{-\varphi(x)} > 0$ would not change the sign, therefore we
 
 And the equivalence of the three statements is proved. $\qquad \square$
 
+\section*{(4)}
+
+We're given:
+
+\begin{align*}
+    f&: \mathbb{R}^d \to \mathbb{R} \qquad \text{ differentiable, may be non-convex} \\
+    \nabla f&: \ L\text{-Lipschitz}, \ L > 0 \quad i.e. \\
+    &\quad \Vert \nabla f ( y ) - \nabla f ( x ) \Vert_* \leq L \Vert y - x \Vert , \quad \forall x, y \in \mathbb{R}^d \\
+    &\quad \text{ where } \Vert u \Vert_* := \underset{x \in \mathbb{R}^d, \Vert x \Vert \leq 1}{\max} \langle u, x \rangle 
+\end{align*}
+
+And the definition of a point $x$ being $\epsilon$-stationary for some $\epsilon > 0$ if:
+
+\begin{align*}
+    \Vert \nabla f (x) \Vert_* \leq \varepsilon
+\end{align*}
+
+\subsection*{(a)}
+
+Need to show:
+
+\begin{align*}
+    f ( y ) \leq f ( x ) + \langle \nabla f ( x ), y - x \rangle + \frac{L}{2} \Vert y - x \Vert^2 , \quad \forall x, y \in \mathbb{R}^d
+\end{align*}
+
+The thought is to use the proof process of Lemma $1.2.3$
+\footnote{Y. Nesterov, \textit{Introductory Lectures on Convex Optimization: A Basic Course}, 1st ed., Springer, New York, NY, 2004, p.~22-23.}:
+
+\begin{tcolorbox}[greenbox, title = Lemma 1.2.3]
+    Let $f \in C^{1,1}_L(\mathbb{R}^n)$. Then for any $x, y \in \mathbb{R}^n$, we have:
+    \begin{align*}
+        |f ( y ) - f ( x ) - \langle \nabla f ( x ), y - x \rangle| \leq \frac{L}{2} \Vert y - x \Vert^2
+    \end{align*}
+\end{tcolorbox}
+
+Let $g(\tau) = x + \tau (y - x), \quad \text{where } \tau \in [0, 1]$, 
+which means that $g(0) = x$ and $g(1) = y$.
+Then we have:
+
+\begin{align*}
+    \frac{d}{d\tau} g(\tau) &= y - x \\
+    \nabla f ( g(\tau) ) &= \nabla f ( x + \tau ( y - x ) ) 
+\end{align*}
+
+Then, for all $x, y \in \mathbb{R}^d$, we have:
+
+\begin{align*}
+    f(y) - f(x) 
+    &= \int^{y}_{x} \nabla f ( g(\tau) ) \cdot d g(\tau) \\
+    &= \int^{1}_{0} \nabla f ( x + \tau ( y - x ) ) \cdot ( y - x ) d\tau \\
+    &= \int^{1}_{0} \langle \nabla f ( x + \tau ( y - x ) ) , y - x \rangle d\tau \\
+\end{align*}
+
+Which is the same as the following, using the fact that the integral is linear, and $f ( x ), y - x$ are not functions of $\tau$:
+
+\begin{align*}
+    &f(y) = f(x) + \int^{1}_{0} \langle \nabla f ( x + \tau ( y - x ) ) , y - x \rangle d\tau \\
+    \Rightarrow \ &f(y) = f(x) + \int_0^1 \langle \nabla f ( x + \tau ( y - x ) ) \textcolor{orange}{+ \nabla f ( x ) - \nabla f ( x )}, y - x \rangle d\tau \\
+    \Rightarrow \ &f(y) = f(x) + \int_0^1 \langle \nabla f ( x ), y - x \rangle d\tau + \int_0^1 \langle \nabla f ( x + \tau ( y - x ) ) - \nabla f ( x ), y - x \rangle d\tau \\
+    \Rightarrow \ &f(y) = f(x) + \langle \nabla f ( x ), y - x \rangle + \int_0^1 \langle \nabla f ( x + \tau ( y - x ) ) - \nabla f ( x ), y - x \rangle d\tau \tag{*}
+\end{align*}
+
+And we're given for any $x, y \in \mathbb{R}^d$:
+
+\begin{align*}
+    &\Vert \underbrace{\nabla f ( y ) - \nabla f ( x )}_{\text{u}} \Vert_* \leq L \Vert y - x \Vert \\
+    \Rightarrow \ &\max_{z \in \mathbb{R}^d, \Vert z \Vert \leq 1} \langle \nabla f ( y ) - \nabla f ( x ), z \rangle \leq L \Vert y - x \Vert \\
+\end{align*}
+
+Let $y = \textcolor{Green}{x + \tau ( y - x )}$, then we have:
+
+\begin{align*}
+    &\Vert \nabla f ( y ) - \nabla f ( x ) \Vert_* = \Vert \nabla f ( \textcolor{Green}{x + \tau ( y - x )} ) - \nabla f ( x ) \Vert_* \leq L \Vert \textcolor{Green}{x + \tau ( y - x )} - x \Vert = L \tau \Vert y - x \Vert \\
+    \Rightarrow \ &\Vert \nabla f ( x + \tau ( y - x ) ) - \nabla f ( x ) \Vert_* \leq L \tau \Vert y - x \Vert \tag{1}
+\end{align*}
+
+Going back to the definition $\Vert u \Vert_* := \underset{x \in \mathbb{R}^d, \Vert x \Vert \leq 1}{\max} \langle u, x \rangle$, 
+this means that for any $z \in \mathbb{R}^d, \Vert z \Vert \leq 1$:
+
+\begin{align*}
+    \langle u, z \rangle \leq \Vert u \Vert_*
+\end{align*}
+
+If we want to expand the definition to arbitrary $v \in \mathbb{R}^d$ (not necessarily $\Vert v \Vert \leq 1$), 
+we can let $z = \frac{v}{\Vert v \Vert}$, then we have:
+
+\begin{align*}
+    &\langle u, z \rangle = \langle u, \frac{v}{\Vert v \Vert} \rangle = \frac{\langle u, v \rangle}{\Vert v \Vert} \leq \Vert u \Vert_* \\
+    \Rightarrow \ &\langle u, v \rangle \leq \Vert u \Vert_* \Vert v \Vert \qquad \forall u, v \in \mathbb{R}^d
+\end{align*}
+
+Let $u = \textcolor{Purple}{\nabla f ( x + \tau ( y - x ) ) - \nabla f ( x )}, \ v = \textcolor{blue}{y - x}$, then we have:
+
+\begin{align*}
+    \langle \textcolor{Purple}{\nabla f ( x + \tau ( y - x ) ) - \nabla f ( x )}, \textcolor{blue}{y - x} \rangle \leq \Vert \textcolor{Purple}{\nabla f ( x + \tau ( y - x ) ) - \nabla f ( x )} \Vert_* \Vert \textcolor{blue}{y - x} \Vert \tag{2}
+\end{align*}
+
+Multiply the result of $(1)$ by $\Vert y - x \Vert$, we have:
+
+\begin{align*}
+    &\Vert \nabla f ( x + \tau ( y - x ) ) - \nabla f ( x ) \Vert_* \leq L \tau \Vert y - x \Vert \\
+    \Rightarrow \ &\Vert \textcolor{Purple}{\nabla f ( x + \tau ( y - x ) ) - \nabla f ( x )} \Vert_* \Vert \textcolor{blue}{y - x} \Vert \leq L \tau \Vert y - x \Vert^2 \tag{3}
+\end{align*}
+
+Combining $(2)$ and $(3)$, we have:
+
+\begin{align*}
+    \langle \nabla f ( x + \tau ( y - x ) ) - \nabla f ( x ), y - x \rangle \leq L \tau \Vert y - x \Vert^2
+\end{align*}
+
+Substituting this back into $(*)$, we have:
+
+\begin{align*}
+    &f(y) \leq f(x) + \langle \nabla f (x), y - x \rangle + \int_0^1 L \tau \Vert y - x \Vert^2 d\tau \\
+    \Rightarrow \ &f(y) \leq f(x) + \langle \nabla f (x), y - x \rangle + L \Vert y - x \Vert^2 \int_0^1 \tau d\tau \\
+    \Rightarrow \ &f(y) \leq f(x) + \langle \nabla f (x), y - x \rangle + \frac{L}{2} \Vert y - x \Vert^2 \qquad \qquad \square
+\end{align*}
+
+
+
+
+\subsection*{(b)}
+
+
+
 \end{document}
