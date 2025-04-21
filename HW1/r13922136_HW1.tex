@@ -495,7 +495,7 @@ And the definition of a point $x$ being $\epsilon$-stationary for some $\epsilon
     \Vert \nabla f (x) \Vert_* \leq \varepsilon
 \end{align*}
 
-\subsection*{(a)}
+\subsection*{(1)}
 
 Need to show:
 
@@ -596,11 +596,294 @@ Substituting this back into $(*)$, we have:
     \Rightarrow \ &f(y) \leq f(x) + \langle \nabla f (x), y - x \rangle + \frac{L}{2} \Vert y - x \Vert^2 \qquad \qquad \square
 \end{align*}
 
+\subsection*{(2)}
+
+We're given the algorithm (generalization of gradient descent):
+
+\begin{align*}
+    &x_1 \in \mathbb{R}^d \\
+    &\text{for every } t \in \mathbb{N} \\
+    &\qquad x_{t + 1} \in \underset{x \in \mathbb{R}^d}{\operatorname{argmin}} \langle \nabla f ( x_t ), x - x_t \rangle + \frac{L}{2} \Vert x - x_t \Vert^2 
+\end{align*}
+
+Need to show:
+
+\begin{align*}
+    f ( x_{t + 1} ) - f ( x_t ) \leq - \frac{1}{2 L} \Vert \nabla f ( x_t ) \Vert_*^2 , \quad \forall t \in \mathbb{N} 
+\end{align*}
+
+\begin{comment}
+\textcolor{red}{--------------------------------}
+
+By the result of $(1)$, we have for any $x, y \in \mathbb{R}^d$:
+
+\begin{align*}
+    f ( y ) \leq f ( x ) + \langle \nabla f ( x ), y - x \rangle + \frac{L}{2} \Vert y - x \Vert^2 
+\end{align*}
+
+Let $y = x - h \nabla f(x)$, then we have:
+
+\begin{align*}
+    f ( y ) 
+    &\leq f ( x ) + \langle \nabla f(x), x - h \nabla f(x)  - x\rangle + \frac{L}{2} \Vert x - h \nabla f(x) - x\Vert^2 \\ 
+    &= f ( x ) + \langle \nabla f(x), - h \nabla f(x) \rangle + \frac{L}{2} \Vert - h \nabla f(x) \Vert^2 \\
+    &= f ( x ) - h \Vert \nabla f(x) \Vert^2 + \frac{L}{2} h^2 \Vert \nabla f(x) \Vert^2 \\
+    &= f ( x ) \textcolor{blue}{- h (1 - \frac{h}{2} L)} \Vert \nabla f(x) \Vert^2 \tag{1}
+\end{align*}
+
+Let $\triangle (h) = - h (1 - \frac{h}{2} L)$, then the best estimage of the possible decrease is equivalent to solve $\min_h \triangle (h)$.
+
+\begin{align*}
+    \triangle '(h) 
+    &= \frac{d}{dh} \left( - h (1 - \frac{h}{2} L) \right) \\
+    &= - (1 - \frac{h}{2} L) - h \left( - \frac{L}{2} \right) \\
+    &= - 1 + \frac{h}{2} L + \frac{h}{2} L \\
+    &= - 1 + hL
+\end{align*}
+
+Thus, the optimal stepsize would satisfy:
+
+\begin{align*}
+    \triangle '(h) = 0 \implies h = \frac{1}{L}
+\end{align*}
+
+So we have:
+
+\begin{align*}
+    &y = x - h \nabla f(x) \\
+    \Rightarrow \ &y = x - \frac{1}{L} \nabla f(x)
+\end{align*}
+
+Plugging in $y = x_{t+1}$ and $x = x_t$, we have:
+
+\begin{align*}
+    x_{t+1} = x_t - \frac{1}{L} \nabla f(x_t) 
+\end{align*}
+
+\textcolor{red}{--------------------------------}
+\end{comment}
+
+Let the function to minimize in the update rule be $g$: 
+
+\begin{align*}
+    &g: \mathbb{R}^d \to \mathbb{R} \\
+    &g(x) = \langle \nabla f(x_t), x - x_t \rangle + \frac{L}{2} \Vert x - x_t \Vert^2 
+\end{align*}
+
+Let $z = x - x_t$, then we have:
+
+\begin{align*}
+    g(x) = \langle \nabla f(x_t), z \rangle + \frac{L}{2} \Vert z \Vert^2 
+\end{align*}
+
+\textcolor{red}{--------------------------------}
+
+So:
+
+\begin{align*}
+    \arg \min_x g(x) = x_t + \arg \min_z \{\langle \nabla f(x_t), z \rangle + \frac{L}{2} \Vert z \Vert^2 \}
+\end{align*}
+
+Let $h(z) = \langle \nabla f(x_t), z \rangle + \frac{L}{2} \Vert z \Vert^2$, we can rearrange the equation as:
+
+\begin{align*}
+    h(z) - \frac{L}{2} \Vert z \Vert^2 = \langle \nabla f(x_t), z \rangle
+\end{align*}
+
+Using the following proposition
+\footnote{\textit{Strong Convexity}, available at: \url{https://xingyuzhou.org/blog/notes/strong-convexity}, accessed: Apr.~21, 2025.}:
+
+\begin{tcolorbox}[greenbox, title = Proposition: Equivalent conditions of strong convexity]
+    A differentiable function $f$ is strongly convex with constant $\mu > 0$
+    \begin{align*}
+        \Leftrightarrow g(x) = f(x) - \frac{\mu}{2} \Vert x \Vert^2 \text{ is convex}, \forall x
+    \end{align*}
+\end{tcolorbox}
+
+Since $\langle \nabla f(x_t), z \rangle$ is affine, $h(z) - \frac{L}{2} \Vert z \Vert^2$ is convex,
+so $h(z)$ is strongly convex with convexity parameter $L$.
+\bigskip
+
+Then, taking the gradient of $h(z)$ with respect to $z$, we have:
+
+\begin{align*}
+    \partial h(z)
+    &= \frac{d}{dz} \left( \langle \nabla f(x_t), z \rangle + \frac{L}{2} \Vert z \Vert^2 \right) \\
+    &= \nabla f(x_t) + \partial \left( \frac{L}{2} \Vert z \Vert^2 \right) 
+\end{align*}
+
+Here we can be sure that the derivative of $\langle \nabla f(x_t), z \rangle$ is $\nabla f(x_t)$, since this term is linear in $z$, 
+and a lienar map is differentiable, however, we need to take the subdifferential for $\frac{L}{2} \Vert z \Vert^2$, since the norm is uncertain.
+\footnote{The definition of subdifferential is from Nesterov, Y. N., \textit{Introductory Lectures on Convex Optimization: A Basic Course}, 1st ed., Springer, New York, NY, 2004, p.~126.}
+\bigskip
+
+Using the following theorem
+\footnote{Nesterov, Y. N., \textit{Introductory Lectures on Convex Optimization: A Basic Course}, 1st ed., Springer, New York, NY, 2004, p.~129.}:
+
+\begin{tcolorbox}[greenbox, title = Theorem 3.1.15]
+    We have $f(x^*) = \min_{x \in \domain f} f(x)$ iff.
+    \begin{align*}
+        0 \in \partial f(x^*)
+    \end{align*}
+\end{tcolorbox}
+
+Since we knew that $h(z)$ is strongly convex, 
+this means that the above equation is equivalent to saying 
+there exists an unique minimizer $z^*$ for $h(z)$ such that:
+
+\begin{align*}
+    0 \in \partial h(z^*)
+\end{align*}
+
+so there exists $u \in \partial (\frac{1}{2} \Vert z \Vert^2)$ such that:
+
+\begin{align*}
+    &\nabla f(x_t) + Lu = 0 \\
+    \Rightarrow \ &u = - \frac{1}{L} \nabla f(x_t)
+\end{align*}
+
+\textcolor{red}{--------------------------------}
+
+Define: 
+\begin{align*}
+    &\phi: \mathbb{R}^d \to \mathbb{R} \\
+    &\phi(z) = \frac{L}{2} \Vert z \Vert^2
+\end{align*}
+
+Then the conjugate
+\footnote{S. Boyd and L. Vandenberghe, \textit{Convex Optimization}, Cambridge University Press, 2004, p.~91. 
+Available online at \url{https://web.stanford.edu/~boyd/cvxbook/bv_cvxbook.pdf}.}
+of $\phi$ is defined as:
+
+\begin{align*}
+    \phi^*(v) 
+    &= \sup_{z \in \mathbb{R}^d} \left( \langle v, z \rangle - \phi(z) \right) \\
+    &= \sup_{z \in \mathbb{R}^d} \left( \langle v, z \rangle - \frac{L}{2} \Vert z \Vert^2 \right)
+\end{align*}
+
+Let $z = \alpha z'$, where $|\Vert z'\Vert = 1$, then:
+
+\begin{align*}
+    \phi^*(v) 
+    &= \sup_{z \in \mathbb{R}^d} \left( \alpha \langle v, z' \rangle - \frac{L}{2} \langle \alpha z', \alpha z' \rangle \right) \\
+    &= \sup_{\alpha \in \mathbb{R}} \left( \alpha \langle v, z' \rangle - \frac{L \alpha^2}{2} \right) \\
+\end{align*}
+
+And by the definition of dual norm, we can derive the inequality (generalization of Cauchy-Schwarz inequality)
+\footnote{S. Boyd and L. Vandenberghe, \textit{Convex Optimization}, Cambridge University Press, 2004, p.~637.}
+:
+
+\begin{align*}
+    \alpha \langle v, z' \rangle \leq \alpha \Vert v \Vert_* \Vert z' \Vert = \alpha \Vert v \Vert_*
+\end{align*}
+
+And the original conjugate can be rewritten as:
+
+\begin{align*}
+    \phi^*(v) = \sup_{\alpha \in \mathbb{R}} \left( \alpha \Vert v \Vert_* - \frac{L}{2} \alpha^2 \right)
+\end{align*}
+
+Taking the derivative:
+
+\begin{align*}
+    \frac{d}{d\alpha} \left( \alpha \Vert v \Vert_* - \frac{L}{2} \alpha^2 \right) = \Vert v \Vert_* - L \alpha 
+    \implies \alpha = \frac{\Vert v \Vert_*}{L}
+\end{align*}
+
+Plugging back in:
+
+\begin{align*}
+    \phi^*(v) 
+    &= \frac{\Vert v \Vert_*}{L} \cdot \Vert v \Vert_* - \frac{L}{2} \cdot \frac{\Vert v \Vert_*^2}{L^2} \\
+    &= \frac{\Vert v \Vert_*^2}{L} - \frac{\Vert v \Vert_*^2}{2L} \\
+    &= \frac{\Vert v \Vert_*^2}{2L}
+\end{align*}
+
+
+By Fenchel's inequality
+\footnote{S. Boyd and L. Vandenberghe, \textit{Convex Optimization}, Cambridge University Press, 2004, p.~94.}
+, which is stated as follows:
+
+\begin{tcolorbox}[greenbox, title = Fenchel's inequality]
+    For all $x, y$:
+    \begin{align*}
+        f(x) + f^*(y) \geq \langle x, y \rangle
+    \end{align*}
+\end{tcolorbox}
+
+Therefore, we have for all $z, v \in \mathbb{R}^d$:
+
+\begin{align*}
+    &\phi(z) + \phi^*(v) \geq \langle z, v \rangle \\
+    \Rightarrow \ &\frac{L}{2} \Vert z \Vert^2 + \frac{\Vert v \Vert_*^2}{2L} \geq \langle z, v \rangle \\
+\end{align*}
+
+Let $v = \nabla f(x_t)$, and since $z = x - x_t$, which means that choosing the optiaml $z$ is equivalent to choosing the optimal $x$, which is $x_{t+1}$,
+so $z = x_{t+1} - x_t$, and we have:
+
+\begin{align*}
+    &\frac{L}{2} \Vert x_{t+1} - x_t \Vert^2 + \frac{1}{2L} \Vert \nabla f(x_t) \Vert_*^2 \geq \langle x_{t+1} - x_t, \nabla f(x_t) \rangle \\
+\end{align*}
+
+By the result of subproblem $(1)$, and plugging in $y = x_{t + 1}$ and $x = x_t$, we have:
+
+\begin{align*}
+    &f ( x_{t + 1} ) \leq f ( x_t ) + \langle \nabla f(x_t), x_{t+1} - x_t \rangle + \frac{L}{2} \Vert x_{t+1} - x_t \Vert^2 \\
+    \Rightarrow \ &f ( x_{t + 1} ) - f ( x_t ) \leq \langle \nabla f(x_t), x_{t+1} - x_t \rangle + \frac{L}{2} \Vert x_{t+1} - x_t \Vert^2 \\
+    \Rightarrow \ &f ( x_{t + 1} ) - f ( x_t ) \leq \frac{1}{2L} \Vert \nabla f(x_t) \Vert_*^2 + \frac{L}{2} \Vert x_{t+1} - x_t \Vert^2 + \frac{L}{2} \Vert x_{t+1} - x_t \Vert^2 
+\end{align*}
+
+\textcolor{red}{--------------------------------}
+\begin{comment}
+% This part is commented out because we cannot ensure that $\Vert \nabla f ( x_t ) \Vert^2 \geq \Vert \nabla f ( x_t ) \Vert_*^2$
+
+Plugging in $h = \frac{1}{L}$ into $(1)$, the optimal update would be:
+
+\begin{align*}
+    &f( y ) = f ( x ) - \frac{1}{2 L} \Vert \nabla f ( x ) \Vert^2 \\
+    \Rightarrow \ & f( y ) - f ( x ) = - \frac{1}{2 L} \Vert \nabla f ( x ) \Vert^2 \qquad \text{(plug in } y = x_{t+1}, x = x_t \text{)} \\
+    \Rightarrow \ &f ( x_{t + 1} ) - f ( x_t ) = - \frac{1}{2 L} \Vert \nabla f ( x_t ) \Vert^2 
+\end{align*}
+
+Thus, to show that $f ( x_{t + 1} ) - f ( x_t ) \leq - \frac{1}{2 L} \Vert \nabla f ( x_t ) \Vert_*^2$ is equivalent to show that:
+
+\begin{align*}
+    &- \frac{1}{2 L} \Vert \nabla f ( x_t ) \Vert^2 \leq - \frac{1}{2 L} \Vert \nabla f ( x_t ) \Vert_*^2 \\
+    \Rightarrow \ &\Vert \nabla f ( x_t ) \Vert^2 \geq \Vert \nabla f ( x_t ) \Vert_*^2 \\
+\end{align*}
+
+By the definition of $\Vert u \Vert_*$:
+
+\begin{align*}
+    \Vert u \Vert_* := \underset{x \in \mathbb{R}^d, \Vert x \Vert \leq 1}{\max} \langle u, x \rangle 
+\end{align*}
+
+Let $u = \nabla f ( x_t )$, then we have:
+
+\begin{align*}
+    \Vert \nabla f ( x_t ) \Vert_* = \underset{x \in \mathbb{R}^d, \Vert x \Vert \leq 1}{\max} \langle \nabla f ( x_t ), x \rangle 
+\end{align*}
+\end{comment}
 
 
 
-\subsection*{(b)}
 
 
+
+For any $u, v \in \mathbb{R}^d, \ \lambda \in \mathbb{R}$, we have:
+
+\begin{align*}
+    g(\lambda u + (1 - \lambda) v) 
+    &= \langle \textcolor{orange}{\nabla f(\lambda u + (1 - \lambda) v)}, \textcolor{Green}{\lambda u + (1 - \lambda) v - x_t} \rangle + \frac{L}{2} \Vert \lambda u + (1 - \lambda) v - x_t \Vert^2 \\
+    &= \langle \textcolor{orange}{\nabla f(\lambda u + (1 - \lambda) v)}, \textcolor{Green}{\lambda u} \rangle + \langle \textcolor{orange}{\nabla f(\lambda u + (1 - \lambda) v)}, \textcolor{Green}{(1 - \lambda) v} \rangle - \langle \textcolor{orange}{\nabla f(\lambda u + (1 - \lambda) v)}, \textcolor{Green}{x_t} \rangle \\
+    &\qquad + \frac{L}{2} \Vert \lambda u + (1 - \lambda) v - x_t \Vert^2 \\
+    &= \langle \nabla f(\lambda u + (1 - \lambda) v), \lambda u \rangle + \langle \nabla f(\lambda u + (1 - \lambda) v), (1 - \lambda) v \rangle - \langle \nabla f(\lambda u + (1 - \lambda) v), x_t \rangle \\
+    &= \lambda \langle \nabla f(u), u - x_t \rangle + (1 - \lambda) \langle \nabla f(v), v - x_t \rangle \\
+    &= \lambda g(u) + (1 - \lambda) g(v)
+\end{align*}
+
+
+
+\subsection*{(3)}
 
 \end{document}
