@@ -478,6 +478,183 @@ and multiplying by $e^{-\varphi(x)} > 0$ would not change the sign, therefore we
 
 And the equivalence of the three statements is proved. $\qquad \square$
 
+\section*{(3)}
+
+We're given:
+
+The ratio of the $d$ stocks on the $t$-th day:
+
+\begin{align*}
+    x_t \in \Delta = \left\{ x = ( x[1], \ldots, x[d] ) \in \mathbb{R}_+^d : \sum_{i = 1}^d x [i] = 1 \right\} ,
+\end{align*}
+
+The price relative on the $t$-th day:
+
+\begin{align*}
+    a_t = ( a_t[1], \ldots, a_t[d] ) = \left( \frac{p^c_t[1]}{p^o_t[1]}, \ldots, \frac{p^c_t[d]}{p^o_t[d]} \right) \in \mathbb{R}_+^d 
+\end{align*}
+
+where:
+
+\begin{align*}
+    p^c_t[i]&: \text{the closing price of the $i$-th stock on the $t$-th day} \\
+    p^o_t[i]&: \text{the opening price of the $i$-th stock on the $t$-th day}
+\end{align*}
+
+Suppose $a_1, \ldots, a_T$ are i.i.d. random vectors, 
+following known common probability distribution $P$.
+\bigskip
+
+Strategy:
+
+\begin{align*}
+    x_{t} \in \underset{x \in \Delta}{\operatorname{argmin}} f (x); \quad f (x) := \mathsf{E} \left[ - \log \langle a_t, x \rangle \right] , \quad \forall t \in \mathbb{N}
+\end{align*}
+
+Assume $f$ strictly convex.
+
+\subsection*{(1)}
+
+Since Alice has one unit of wealth before the first day, let $W_0 = 1$.
+And let $W_{t-1}$ be the wealth of Alice before the $t$-th day.
+\bigskip
+
+So after the end of the $t$-th day, Alice would have her wealth $W_t$:
+
+\begin{align*}
+    W_t 
+    &= W_{t-1} \cdot x_t[1] \cdot a_t[1] + W_{t-1} \cdot x_t[2] \cdot a_t[2] + \cdots + W_{t-1} \cdot x_t[d] \cdot a_t[d] \\
+    &= W_{t-1} \cdot \langle a_t, x_t \rangle
+\end{align*}
+
+For example, if $a_t[1] = 2$, then the price of the first stock on day $t$ is twice as high as the price on day $t-1$, we can then calculate how much Alice invests in the first stock on day $t$, which is $W_{t-1} \cdot x_t[1]$, and multiply this price relative to get the wealth on day $t$.
+
+Using this formula, we knew that:
+
+\begin{align*}
+    W_1 &= W_0 \cdot \langle a_1, x_1 \rangle \\
+    W_2 &= W_1 \cdot \langle a_2, x_2 \rangle  = W_0 \cdot \langle a_1, x_1 \rangle \cdot \langle a_2, x_2 \rangle \\
+    W_3 &= W_2 \cdot \langle a_3, x_3 \rangle  = W_0 \cdot \langle a_1, x_1 \rangle \cdot \langle a_2, x_2 \rangle \cdot \langle a_3, x_3 \rangle \\
+    \vdots \\
+    W_T &= W_0 \cdot \langle a_1, x_1 \rangle \cdot \langle a_2, x_2 \rangle \cdot \cdots \cdot \langle a_T, x_T \rangle
+\end{align*}
+
+Which is the same as required since $W_0 = 1$, and we have:
+
+\begin{align*}
+    W_T = \langle a_1, x_1 \rangle \cdot \langle a_2, x_2 \rangle \cdot \cdots \cdot \langle a_T, x_T \rangle \qquad \square
+\end{align*}
+
+\subsection*{(2)}
+
+Our aim is to show that:
+
+\begin{align*}
+    \lim_{T \to \infty} \mathsf{E} \left[ \frac{W_T (x)}{W_T^\star} \right] \leq 1 ,  \quad \forall x \in \Delta \tag{*}
+\end{align*}
+
+where $W_T (x)$ (given by the problem statement) and $W_T^\star$ (by the previous subproblem) are defined as:
+
+\begin{align*}
+    W_T (x) &:= \langle a_1, x \rangle \cdots \langle a_T, x \rangle = \prod_{t = 1}^T \langle a_t, x \rangle \\
+    W_T^\star &:= \langle a_1, x_1 \rangle \cdots \langle a_T, x_T \rangle = \prod_{t = 1}^T \langle a_t, x_t \rangle
+\end{align*}
+
+\begin{comment}
+Taking $\log$ on both sides of $(*)$, we have:
+
+\begin{align*}
+    &\lim_{T \to \infty} \log \left( \mathsf{E} \left[ \frac{W_T (x)}{W_T^\star} \right] \right) \leq 0 ,  \quad \forall x \in \Delta \\
+    \Rightarrow \ &\lim_{T \to \infty} \log \left( \frac{\mathsf{E} [W_T (x)]}{\mathsf{E} [W_T^\star]} \right) \leq 0 ,  \quad \forall x \in \Delta \\
+    \Rightarrow \ &\lim_{T \to \infty} \log \left( \mathsf{E} [W_T (x)]\right) - \log \left(\mathsf{E} [W_T^\star] \right) \leq 0 ,  \quad \forall x \in \Delta \\
+    \Rightarrow \ &\lim_{T \to \infty} \mathsf{E} \left[ \log (W_T (x)) \right] - \mathsf{E} \left[ \log (W_T^\star) \right] \leq 0 ,  \quad \forall x \in \Delta \\
+    \Rightarrow \ &\lim_{T \to \infty} \mathsf{E} \left[ \log (\prod_{t = 1}^T \langle a_t, x \rangle)\right] - \mathsf{E} \left[ \log (\prod_{t = 1}^T \langle a_t, x_t \rangle) \right] \leq 0 ,  \quad \forall x \in \Delta \\
+    \Rightarrow \ &\lim_{T \to \infty} \mathsf{E} \left[ \sum_{t = 1}^T \log \langle a_t, x \rangle\right] - \mathsf{E} \left[ \sum_{t = 1}^T \log \langle a_t, x_t \rangle \right] \leq 0 ,  \quad \forall x \in \Delta \\
+    \Rightarrow \ &\lim_{T \to \infty} \mathsf{E} \left[ \sum_{t = 1}^T \left( \log \langle a_t, x \rangle - \log \langle a_t, x_t \rangle \right) \right] \leq 0 ,  \quad \forall x \in \Delta \tag{1}
+\end{align*}
+\end{comment}
+From Alice's strategy, we have:
+
+\begin{align*}
+    x_{t} \in \underset{x \in \Delta}{\operatorname{argmin}} f (x); \quad f (x) := \mathsf{E} \left[ - \log \langle a_t, x \rangle \right] , \quad \forall t \in \mathbb{N} 
+\end{align*}
+
+This means that Alice decides the ratio of the $t$-th day by finding the $x$ that minimizes the function $f$, which is the expected loss of using $x$ as the ratio.
+\bigskip
+
+\begin{comment}
+Since $(1)$ is the expected value of the sum over $T$ days, we can divide it by $T$ on both sides to get the average per day, and our aim would be proving the following:
+
+\begin{align*}
+    \lim_{T \to \infty} \frac{1}{T} \mathsf{E} \left[ \sum_{t = 1}^T \left( \log \langle a_t, x \rangle - \log \langle a_t, x_t \rangle \right) \right] \leq 0 ,  \quad \forall x \in \Delta \tag{2}
+\end{align*}
+\end{comment}
+
+By the fact that $f$ is strictly convex and $x_{t} \in \underset{x \in \Delta}{\operatorname{argmin}} f (x)$, we have:
+
+\begin{align*}
+    f (x_t) < f (x) \quad \forall x \in \Delta \setminus \{ x_t \} 
+\end{align*}
+
+Replace by the definition of $f$, and using the fact that expectation is linear:
+
+\begin{align*}
+    &\mathsf{E} \left[ - \log \langle a_t, x_t \rangle \right] < \mathsf{E} \left[ - \log \langle a_t, x \rangle \right] \quad \forall x \in \Delta \setminus \{ x_t \} \\
+    \Rightarrow \ &- \mathsf{E} \left[ \log \langle a_t, x_t \rangle \right] < - \mathsf{E} \left[ \log \langle a_t, x \rangle \right] \quad \forall x \in \Delta \setminus \{ x_t \} \\
+    \Rightarrow \ &\mathsf{E} \left[ \log \langle a_t, x \rangle \right] - \mathsf{E} \left[ \log \langle a_t, x_t \rangle \right] < 0 \quad \forall x \in \Delta \setminus \{ x_t \} \\
+    \Rightarrow \ &\mathsf{E} \left[ \log \langle a_t, x \rangle - \log \langle a_t, x_t \rangle \right] < 0 \quad \forall x \in \Delta \setminus \{ x_t \} \\
+    \Rightarrow \ &\lim_{T \to \infty} \frac{1}{T} \sum_{t = 1}^T \mathsf{E} \left[ \log \langle a_t, x \rangle - \log \langle a_t, x_t \rangle \right] < 0 \quad \forall x \in \Delta \setminus \{ x_t \} \\
+    \Rightarrow \ &\lim_{T \to \infty} \frac{1}{T} \mathsf{E} \left[ \sum_{t = 1}^T \left( \log \langle a_t, x \rangle - \log \langle a_t, x_t \rangle \right) \right] < 0 ,  \quad \forall x \in \Delta \setminus \{ x_t \}
+\end{align*}
+
+The above inequality would be equality only when $x_t = x$, so if we modify the set to not exclude $x_t$, we would have the following:
+
+\begin{align*}
+    \lim_{T \to \infty} \frac{1}{T} \mathsf{E} \left[ \sum_{t = 1}^T \left( \log \langle a_t, x \rangle - \log \langle a_t, x_t \rangle \right) \right] \leq 0 ,  \quad \forall x \in \Delta 
+\end{align*}
+
+And this implies:
+
+\begin{align*}
+    &\lim_{T \to \infty} \frac{1}{T} \mathsf{E} \left[ \sum_{t = 1}^T \left( \log \langle a_t, x \rangle - \log \langle a_t, x_t \rangle \right) \right] \leq 0 ,  \quad \forall x \in \Delta \\
+    \Rightarrow \ & \lim_{T \to \infty} \frac{1}{T} \mathsf{E} \left[ \sum_{t=1}^T \log \langle a_t, x \rangle - \sum_{t=1}^T \log \langle a_t, x_t \rangle \right] \leq 0 ,  \quad \forall x \in \Delta \\
+    \Rightarrow \ & \lim_{T \to \infty} \frac{1}{T} \mathsf{E} \left[ \log \prod_{t=1}^T \langle a_t, x \rangle - \log \prod_{t=1}^T \langle a_t, x_t \rangle \right] \leq 0 ,  \quad \forall x \in \Delta \\
+    \Rightarrow \ & \lim_{T \to \infty} \frac{1}{T} \mathsf{E} \left[ \log \left( \frac{\prod_{t=1}^T \langle a_t, x \rangle}{\prod_{t=1}^T \langle a_t, x_t \rangle} \right) \right] \leq 0 ,  \quad \forall x \in \Delta \\
+    \Rightarrow \ & \lim_{T \to \infty} \frac{1}{T} \mathsf{E} \left[ \log \left( \frac{W_T (x)}{W_T^\star} \right) \right] \leq 0 ,  \quad \forall x \in \Delta \\
+    \Rightarrow \ & \mathsf{E} \left[ \log \left( \frac{W_T (x)}{W_T^\star} \right) \right] \leq 0 ,  \quad \forall x \in \Delta
+\end{align*}
+
+
+
+\begin{comment}
+% Jensen's inequality cannot derive the required result 
+By Jensen's inequality
+\footnote{Boyd, S. P., and L. Vandenberghe, \textit{Convex Optimization}, 1st ed., Cambridge University Press, Cambridge, UK, 2004, p.~77-78.}:
+
+\begin{tcolorbox}[greenbox, title = Jensen's inequality]
+    If $x$ is a random variable such that $x \in \domain f$ with probability one, and $f$ is convex, then we have:
+    \begin{align*}
+        f \left( \mathsf{E} [x] \right) \leq \mathsf{E} \left[ f (x) \right]
+    \end{align*}
+\end{tcolorbox}
+
+Now let: 
+
+\begin{align*}
+    f (X) = \log X \qquad \text{ where } X = \frac{W_T (x)}{W_T^\star}
+\end{align*}
+
+But since $f$ is concave, we have:
+
+\begin{align*}
+    &f \left( \mathsf{E} [X] \right) \geq \mathsf{E} \left[ f (X) \right] \\
+    \Rightarrow \ &\mathsf{E} \left[ \log (X) \right] \leq \log \left( \mathsf{E} [X] \right) \\
+    \Rightarrow \ &\mathsf{E} \left[ \log \left( \frac{W_T (x)}{W_T^\star} \right) \right] \leq \log \left( \mathsf{E} \left[ \frac{W_T (x)}{W_T^\star} \right] \right)
+\end{align*}
+\end{comment}
+
+\subsection*{(3)}
+
 \section*{(4)}
 
 We're given:
@@ -869,7 +1046,7 @@ Let $u = \nabla f ( x_t )$, then we have:
 
 
 
-
+\begin{comment}
 For any $u, v \in \mathbb{R}^d, \ \lambda \in \mathbb{R}$, we have:
 
 \begin{align*}
@@ -881,6 +1058,16 @@ For any $u, v \in \mathbb{R}^d, \ \lambda \in \mathbb{R}$, we have:
     &= \lambda \langle \nabla f(u), u - x_t \rangle + (1 - \lambda) \langle \nabla f(v), v - x_t \rangle \\
     &= \lambda g(u) + (1 - \lambda) g(v)
 \end{align*}
+\end{comment}
+
+Claim:
+
+\begin{align*}
+    \min_{1 \leq \tau \leq t} \Vert \nabla f ( x_\tau ) \Vert_*^2 \leq \frac{ 2 L \left[ f ( x_1 ) - f ( x_{t + 1} ) \right] }{t} , \quad \forall t \in \mathbb{N}
+\end{align*}
+
+
+
 
 
 
