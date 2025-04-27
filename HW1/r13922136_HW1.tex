@@ -12,6 +12,8 @@
 \usepackage[thinc]{esdiff}
 \usepackage{tcolorbox}
 \usepackage{cancel}
+\usepackage{float}
+\graphicspath{ {./HW1_images/} }
 \newtheorem*{theorem}{Theorem}
 
 \title{Optimization Algorithms: HW1}
@@ -44,6 +46,107 @@
 }
 
 \section*{1}
+
+\subsection*{(1)}
+
+First, consider a function $g(z) = \log(1 + e^{-z})$, taking its first and second derivatives:
+
+\begin{align*}
+    g'(z) &= \frac{d}{dz} \log(1 + e^{-z}) = \frac{-e^{-z}}{1 + e^{-z}} \\
+    g''(z) &= \frac{d}{dz} \left( \frac{-e^{-z}}{1 + e^{-z}} \right) = \frac{e^{-z}}{(1 + e^{-z})^2}
+\end{align*}
+
+We can see that it $g''(z)$ is nonnegative at all points, thus $g(z)$ is convex.
+
+Now, consider $z = y_i \langle x_i, w \rangle$, and let $h(w) = \log(1 + e^{-y_i \langle x_i, w \rangle})$:
+
+\begin{align*}
+    &h: \mathbb{R}^d \to \mathbb{R} \\
+    &h(w) = g(y_i \langle x_i, w \rangle)
+\end{align*}
+
+Since $g(z)$ is convex, $h(w)$ is convex.
+\footnote{S. Boyd and L. Vandenberghe, \textit{Convex Optimization}, 1st ed., Cambridge University Press, 2004, p.~79.}
+Also, since sum and scaling of convex functions are convex, the function $f(w)$ we're given is also convex.
+\footnote{Y. Nesterov, \textit{Introductory Lectures on Convex Optimization: A Basic Course}, 1st ed., Springer, New York, NY, 2004, p.~82.}
+\bigskip
+
+Next, we compute the gradient and Hessian of $f(w)$:
+
+\begin{align*}
+    \nabla f(w) 
+    &= \nabla \left( \frac{1}{n} \sum_{i = 1}^n \log \left( 1 + \mathrm{e}^{- y_i \langle x_i, w \rangle} \right) \right) \\
+    &= \frac{1}{n} \sum_{i = 1}^n \nabla \log \left( 1 + \mathrm{e}^{- y_i \langle x_i, w \rangle} \right) \\
+    &= \frac{1}{n} \sum_{i = 1}^n \frac{-y_i x_i e^{-y_i \langle x_i, w \rangle}}{1 + e^{-y_i \langle x_i, w \rangle}} \\
+    &= \frac{1}{n} \sum_{i = 1}^n \frac{-y_i x_i}{1 + e^{y_i \langle x_i, w \rangle}}
+\end{align*}
+
+\begin{align*}
+    \nabla^2 f(w) 
+    &= \nabla \left( \frac{1}{n} \sum_{i = 1}^n \frac{-y_i x_i}{1 + e^{y_i \langle x_i, w \rangle}} \right) \\
+    &= \frac{1}{n} \sum_{i = 1}^n \nabla \left( \frac{-y_i x_i}{1 + e^{y_i \langle x_i, w \rangle}} \right) \\
+    &= \frac{1}{n} \sum_{i = 1}^n \frac{ \left( \frac{\partial}{\partial w} \left( -y_i x_i \right) \right) \left( 1 + e^{y_i \langle x_i, w \rangle} \right) - \left( -y_i x_i \right) \frac{\partial}{\partial w} \left( 1 + e^{y_i \langle x_i, w \rangle} \right) }{\left( 1 + e^{y_i \langle x_i, w \rangle} \right)^2} \\
+    &= \frac{1}{n} \sum_{i = 1}^n \frac{ \left( y_i x_i \right) \frac{\partial}{\partial w} \left( 1 + e^{y_i \langle x_i, w \rangle} \right) }{\left( 1 + e^{y_i \langle x_i, w \rangle} \right)^2} \\
+    &= \frac{1}{n} \sum_{i = 1}^n \frac{ \left( y_i x_i \right) \left( y_i e^{y_i \langle x_i, w \rangle} x_i \right) }{\left( 1 + e^{y_i \langle x_i, w \rangle} \right)^2} \\
+    &= \frac{1}{n} \sum_{i = 1}^n \frac{ e^{y_i \langle x_i, w \rangle} x_i x_i^T }{\left( 1 + e^{y_i \langle x_i, w \rangle} \right)^2} \\
+\end{align*}
+
+Since every $x_i x_i^T$ is positive semidefinite, and is multiplied by a positive value $\frac{e^{y_i \langle x_i, w \rangle}}{(1 + e^{y_i \langle x_i, w \rangle})^2}$, the average of them, which is the Hessian $\nabla^2 f(w)$, is positive semidefinite.
+\bigskip
+
+By the following theorem
+\footnote{Y. Nesterov, \textit{Introductory Lectures on Convex Optimization: A Basic Course}, 1st ed., Springer, New York, NY, 2004, p.~58.},
+we can derive the Lipschitz constant $L$ of $\nabla f(w)$:
+
+\begin{tcolorbox}[greenbox, title = Theorem 2.1.6]
+    Two times continuously differentiable function $f$ belongs to $\mathsf{F}^{2,1}_L(\mathbb{R}^n)$ 
+    \begin{align*}
+        \Leftrightarrow 0 \preceq \nabla^2 f(x) \preceq L I_n \quad \forall x \in \mathbb{R}^n
+    \end{align*}
+\end{tcolorbox}
+
+This means that the eigenvalues of the Hessian should be in the range of $[0, L]$,
+and we could find $L$ by finding the maximum eigenvalue of the Hessian.
+\bigskip
+
+Observe the structure of the Hessian, the scalar of $x_i x_i^T$ is:
+
+\begin{align*}
+    \frac{ e^{y_i \langle x_i, w \rangle} }{\left( 1 + e^{y_i \langle x_i, w \rangle} \right)^2} \in (0, \frac{1}{4}]
+\end{align*}
+
+Where $\frac{1}{4}$ happens when $y_i \langle x_i, w \rangle = 0$.
+\bigskip
+
+Thus, $L = \frac{1}{4n} \lambda_{max} (\sum_{i = 1}^n x_i x_i^T)$
+\bigskip
+
+Then we could use the following scheme
+\footnote{Y. Nesterov, \textit{Introductory Lectures on Convex Optimization: A Basic Course}, 1st ed., Springer, New York, NY, 2004, p.~76.} 
+to solve this optimization problem, since this scheme ($2.2.6$) is optimal for unconstrained minimization of the functions from $\mathsf{S}^{1,1}_{\mu, L}(\mathbb{R}^n), \ \mu \geq 0$
+\footnote{Y. Nesterov, \textit{Introductory Lectures on Convex Optimization: A Basic Course}, 1st ed., Springer, New York, NY, 2004, p.~77.}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width = 0.7\textwidth]{general_scheme_of_optimal_method.png}
+\end{figure}
+
+In our case, we set $\mu = 0$ since we cannot guarantee strongly convexity, and $L$ as the Lipschitz constant we just derived.
+\bigskip
+
+By Theorem $2.2.2$
+\footnote{Y. Nesterov, \textit{Introductory Lectures on Convex Optimization: A Basic Course}, 1st ed., Springer, New York, NY, 2004, p.~77.}
+, we have:
+
+\begin{align*}
+    f(x_k) - f^* \leq L \min \left\{ \left(1 - \sqrt{\frac{\mu}{L}}\right)^k, \frac{4}{(k+2)^2} \right\} \Vert x_0 - x^* \Vert^2
+\end{align*}
+
+Since we have $\mu = 0$, we can write the above optimization error guarantee of our problem as:
+
+\begin{align*}
+    f(w_k) - f^* \leq \frac{4L \Vert w_0 - w^* \Vert^2}{(k+2)^2} 
+\end{align*}
 
 \section*{2}
 
@@ -853,8 +956,6 @@ Let $z = x - x_t$, then we have:
     g(x) = \langle \nabla f(x_t), z \rangle + \frac{L}{2} \Vert z \Vert^2 
 \end{align*}
 
-\textcolor{red}{--------------------------------}
-
 So:
 
 \begin{align*}
@@ -918,6 +1019,19 @@ so there exists $u \in \partial (\frac{1}{2} \Vert z \Vert^2)$ such that:
     &\nabla f(x_t) + Lu = 0 \\
     \Rightarrow \ &u = - \frac{1}{L} \nabla f(x_t)
 \end{align*}
+
+Thus, the optimal update rule is:
+
+\begin{align*}
+    x_{t+1} = x_t - \frac{1}{L} \nabla f(x_t)
+\end{align*}
+
+A clearer presentation of the above process is as the image below:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{HW1_images/4_(2).jpg}
+\end{figure}
 
 \textcolor{red}{--------------------------------}
 
@@ -1114,6 +1228,80 @@ Plugging this back into $(1)$, we have:
     \min_{1 \leq \tau \leq t} \Vert \nabla f ( x_\tau ) \Vert_*^2 \leq \frac{ 2 L \left[ f ( x_1 ) - f ( x_{t + 1} ) \right] }{t} , \quad \forall t \in \mathbb{N} \qquad \square
 \end{align*}
 
+\subsection*{(4)}
+
+We're given the algorithm:
+
+\begin{align*}
+    &x_1 \in \mathbb{R}^d \\
+    &\text{For every }t \in \mathbb{N}, \qquad x_{t+1} = x_t - \frac{\Vert \nabla f(x_t) \Vert_1}{L}\mathrm{sign}(\nabla f(x_t)) 
+\end{align*}
+
+where:
+
+\begin{align*}
+    &\mathrm{sign}(x) = 
+    \begin{cases}
+        1 & \text{if } x \geq 0 \\
+        -1 & \text{if } x < 0 
+    \end{cases} \text{ for any } x \in \mathbb{R} \\
+    & \mathrm{sign}(v) = 
+    \begin{bmatrix}
+        \mathrm{sign}(v[1]) \\
+        \vdots \\
+        \mathrm{sign}(v[d])
+    \end{bmatrix}
+    \text{ for any } v = \begin{bmatrix} v[1] \\ \vdots \\ v[d] \end{bmatrix} \in \mathbb{R}^d
+\end{align*}
+
+Denote:
+
+\begin{align*}
+    \nabla f(x_t) = 
+    \begin{bmatrix}
+        \frac{\partial f}{\partial x_1}(x_t) \\
+        \vdots \\
+        \frac{\partial f}{\partial x_d}(x_t)
+    \end{bmatrix}
+    \in \mathbb{R}^d
+\end{align*}
+
+Then:
+
+\begin{align*}
+    \mathrm{sign}(\nabla f(x_t)) = 
+    \begin{bmatrix}
+        \mathrm{sign}(\frac{\partial f}{\partial x_1}(x_t)) \\
+        \vdots \\
+        \mathrm{sign}(\frac{\partial f}{\partial x_d}(x_t))
+    \end{bmatrix}
+    \quad, \text{ and }
+    \Vert \nabla f(x_t) \Vert_1 = \sum_{i=1}^{d} \left| \frac{\partial f}{\partial x_i}(x_t) \right|
+\end{align*}
+
+Note that $l_1$-norm is nondifferentiable, so to find the subgradient, we consider $l_1$-norm in the following form
+\footnote{S. Boyd and L. Vandenberghe, \textit{Subgradients}, Notes for EE364b, Stanford University, Winter 2006--07, Apr.~13, 2008. Available at: \url{https://see.stanford.edu/materials/lsocoee364b/01-subgradients_notes.pdf}, p.~5.}
+
+\begin{align*}
+    \Vert x \Vert_1 = \{ \max s^Tx \mid s_i \in \{ -1, 1 \} \} 
+\end{align*}
+
+And we could find the unique $s$ by choosing $s_i = +1$ if $x_i \geq 0$, and $s_i = -1$ if $x_i < 0$,
+this is equivalent to saying that for the case $x = \nabla f(x_t)$, if $\frac{\partial f}{\partial x_i}(x_t) \geq 0$, then $s_i = 1$, otherwise $s_i = -1$,
+and we could see that $s$ is actually $\mathrm{sign}(\nabla f(x_t))$.
+\bigskip
+
+Thus, the update rule of this algorithm can be rewritten as:
+
+\begin{align*}
+    x_{t+1} = x_t - \frac{s^T \nabla f(x_t)}{L} s
+\end{align*}
+
+In the second subproblem, we've shown that the optimal update rule is:
+
+\begin{align*}
+    x_{t+1} = x_t - \frac{1}{L} \nabla f(x_t)
+\end{align*}
 
 
 \end{document}
