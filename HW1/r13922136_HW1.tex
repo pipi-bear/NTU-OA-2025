@@ -11,6 +11,7 @@
 \usepackage[dvipsnames]{xcolor}
 \usepackage[thinc]{esdiff}
 \usepackage{tcolorbox}
+\usepackage{cancel}
 \newtheorem*{theorem}{Theorem}
 
 \title{Optimization Algorithms: HW1}
@@ -626,8 +627,6 @@ And this implies:
 
 
 
-\begin{comment}
-% Jensen's inequality cannot derive the required result 
 By Jensen's inequality
 \footnote{Boyd, S. P., and L. Vandenberghe, \textit{Convex Optimization}, 1st ed., Cambridge University Press, Cambridge, UK, 2004, p.~77-78.}:
 
@@ -638,16 +637,17 @@ By Jensen's inequality
     \end{align*}
 \end{tcolorbox}
 
+\begin{comment}
 Now let: 
 
 \begin{align*}
-    f (X) = \log X \qquad \text{ where } X = \frac{W_T (x)}{W_T^\star}
+    g (X) = \log X \qquad \text{ where } X = \frac{W_T (x)}{W_T^\star}
 \end{align*}
 
 But since $f$ is concave, we have:
 
 \begin{align*}
-    &f \left( \mathsf{E} [X] \right) \geq \mathsf{E} \left[ f (X) \right] \\
+    &g \left( \mathsf{E} [X] \right) \geq \mathsf{E} \left[ g (X) \right] \\
     \Rightarrow \ &\mathsf{E} \left[ \log (X) \right] \leq \log \left( \mathsf{E} [X] \right) \\
     \Rightarrow \ &\mathsf{E} \left[ \log \left( \frac{W_T (x)}{W_T^\star} \right) \right] \leq \log \left( \mathsf{E} \left[ \frac{W_T (x)}{W_T^\star} \right] \right)
 \end{align*}
@@ -1060,17 +1060,60 @@ For any $u, v \in \mathbb{R}^d, \ \lambda \in \mathbb{R}$, we have:
 \end{align*}
 \end{comment}
 
+\subsection*{(3)}
+
 Claim:
 
 \begin{align*}
     \min_{1 \leq \tau \leq t} \Vert \nabla f ( x_\tau ) \Vert_*^2 \leq \frac{ 2 L \left[ f ( x_1 ) - f ( x_{t + 1} ) \right] }{t} , \quad \forall t \in \mathbb{N}
 \end{align*}
 
+By the result of the second subproblem, we have:
+
+\begin{align*}
+    f ( x_{t + 1} ) - f ( x_t ) \leq -\frac{1}{2L} \Vert \nabla f ( x_t ) \Vert_*^2 \qquad \forall t \in \mathbb{N}
+\end{align*}
+
+And since this holds for all $t \in \mathbb{N}$, let $t = 1, \dots, t$:
+
+\begin{align*}
+    f ( x_{t + 1} ) - \cancel{f ( x_t )} &\leq -\frac{1}{2L} \Vert \nabla f ( x_t ) \Vert_*^2 \qquad (t = t) \\
+    \cancel{f ( x_t )} - \cancel{f ( x_{t - 1} )} &\leq -\frac{1}{2L} \Vert \nabla f ( x_{t - 1} ) \Vert_*^2 \qquad (t = t - 1) \\
+    &\vdots \\
+    \cancel{f ( x_3 )} - \cancel{f ( x_2 )} &\leq -\frac{1}{2L} \Vert \nabla f ( x_2 ) \Vert_*^2 \qquad (t = 2) \\
+    \cancel{f ( x_2 )} - f ( x_1 ) &\leq -\frac{1}{2L} \Vert \nabla f ( x_1 ) \Vert_*^2 \qquad (t = 1) 
+\end{align*}
+
+Summing up these inequalities, the terms $f(x_t)$ to $f(x_2)$ on the left hand side will cancel out, and we have:
+
+\begin{align*}
+    &f(x_{t+1}) - f(x_1) \leq -\frac{1}{2L} \sum_{i=1}^{t} \Vert \nabla f ( x_i ) \Vert_*^2 \\
+    \Rightarrow \ &f(x_1) - f(x_{t+1}) \geq \frac{1}{2L} \sum_{i=1}^{t} \Vert \nabla f ( x_i ) \Vert_*^2 \\
+    \Rightarrow \ &\frac{2L \left[ f(x_1) - f(x_{t+1}) \right]}{t} \geq \frac{1}{t} \sum_{i=1}^{t} \Vert \nabla f ( x_i ) \Vert_*^2 \quad \forall t \in \mathbb{N} \tag{1}
+\end{align*}
+
+Since:
+
+\begin{align*}
+    \min_{1 \leq \tau \leq t} \Vert \nabla f ( x_\tau ) \Vert_*^2 &\leq \Vert \nabla f(x_1) \Vert_*^2 \\
+    \min_{1 \leq \tau \leq t} \Vert \nabla f ( x_\tau ) \Vert_*^2 &\leq \Vert \nabla f(x_2) \Vert_*^2 \\
+    &\vdots \\
+    \min_{1 \leq \tau \leq t} \Vert \nabla f ( x_\tau ) \Vert_*^2 &\leq \Vert \nabla f(x_t) \Vert_*^2
+\end{align*}
+
+Summing up these inequalities, we have:
+
+\begin{align*}
+    &t \min_{1 \leq \tau \leq t} \Vert \nabla f ( x_\tau ) \Vert_*^2 \leq \sum_{i=1}^{t} \Vert \nabla f ( x_i ) \Vert_*^2 \\
+    \Rightarrow \ &\min_{1 \leq \tau \leq t} \Vert \nabla f ( x_\tau ) \Vert_*^2 \leq \frac{1}{t} \sum_{i=1}^{t} \Vert \nabla f ( x_i ) \Vert_*^2
+\end{align*}
+
+Plugging this back into $(1)$, we have:
+
+\begin{align*}
+    \min_{1 \leq \tau \leq t} \Vert \nabla f ( x_\tau ) \Vert_*^2 \leq \frac{ 2 L \left[ f ( x_1 ) - f ( x_{t + 1} ) \right] }{t} , \quad \forall t \in \mathbb{N} \qquad \square
+\end{align*}
 
 
-
-
-
-\subsection*{(3)}
 
 \end{document}
