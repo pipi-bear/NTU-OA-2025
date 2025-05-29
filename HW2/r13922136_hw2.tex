@@ -863,32 +863,131 @@ We need to further prove that $g_\mu$ is $\frac{1}{\mu}$-smooth.
 
 \begin{solution}
 
-    By the definition in the lecture note
-    \footnote{Lecture 4: Mirror Descent, p.~10}, we have:
+    By the definition in the following image
+    \footnote{A. Sidford, \textit{MS\&E 213 / CS 269O: Chapter 2 — Smooth Functions}, Stanford University, Oct.~17, 2020. Available at: \url{https://web.stanford.edu/~sidford/courses/20fa_opt_theory/sidford_mse213_2020fa_chap_2_smoothness.pdf}, p.~2.}:
 
-    \begin{tcolorbox}[bluebox, title = $L$-Smooth]
-        We say a differentiable function $f: \mathbb{R}^d \to \mathbb{R}$ is $L$-smooth for some $L > 0$ if:
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width = 0.8\textwidth]{L_smooth_def.png}
+    \end{figure}
 
-        \begin{align*}
-            f(y) \leq f(x) + \langle \nabla f(x), y - x \rangle + \frac{L}{2} \Vert y - x \Vert_2^2, \qquad \forall x, y \in \mathbb{R}^d
-        \end{align*}
-    \end{tcolorbox}
+    % \footnote{Lecture 4: Mirror Descent, p.~10}, we have:
+
+    % \begin{tcolorbox}[bluebox, title = $L$-Smooth]
+    %     We say a differentiable function $f: \mathbb{R}^d \to \mathbb{R}$ is $L$-smooth for some $L > 0$ if:
+
+    %     \begin{align*}
+    %         f(y) \leq f(x) + \langle \nabla f(x), y - x \rangle + \frac{L}{2} \Vert y - x \Vert_2^2, \qquad \forall x, y \in \mathbb{R}^d
+    %     \end{align*}
+    % \end{tcolorbox}
+
+    Since we have already proved that $g_\mu(w)$ is differentiable, 
+    proving the following claim is equivalent to proving that $g_\mu(w)$ is $\frac{1}{\mu}$-smooth.
+
+    \bigskip
 
     \begin{claim}
         \begin{align*}
-            g_\mu(w_1) \leq g_\mu(w_2) + \langle \nabla g_\mu(w_2), w_1 - w_2 \rangle + \frac{1}{2\mu} \Vert w_1 - w_2 \Vert_2^2, \qquad \forall w_1, w_2 \in \mathbb{R}^d
+            \Vert \nabla g_\mu(w_1) - \nabla g_\mu(w_2) \Vert_2 \leq \frac{1}{\mu} \Vert w_1 - w_2 \Vert_2, \qquad \forall w_1, w_2 \in \mathbb{R}^d
         \end{align*}
     \end{claim}
 
     \begin{claimproof}
+        Following the notation in the previous subproblem, we have:
+        
         \begin{align*}
-            g_\mu(w_1) 
-            &= \max_{v \in \mathcal{B}_\infty} \langle y, v \rangle - \frac{\mu}{2} \Vert v \Vert^2_2 \\
-            &= \max_{v \in \mathcal{B}_\infty} \langle x, v \rangle - \frac{\mu}{2} \Vert v \Vert^2_2 + \langle y - x, v \rangle \\
-            &= g_\mu(x) + \langle y - x, v \rangle
+            \nabla g_\mu(w) = \begin{bmatrix}
+                \nabla g_\mu(w)[1] \\
+                \vdots \\
+                \nabla g_\mu(w)[d]
+            \end{bmatrix}
+        \end{align*}
+
+        Let:
+
+        \begin{align*}
+            w_1 = \begin{bmatrix}
+                w_1[1] \\
+                \vdots \\
+                w_1[d]
+            \end{bmatrix}, \quad w_2 = \begin{bmatrix}
+                w_2[1] \\
+                \vdots \\
+                w_2[d]
+            \end{bmatrix}
+        \end{align*}
+
+        Then we have:
+
+        \begin{align*}
+            \nabla g_\mu(w_1) - \nabla g_\mu(w_2) 
+            = \begin{bmatrix}
+                \nabla g_\mu(w_1)[1] - \nabla g_\mu(w_2)[1] \\
+                \vdots \\
+                \nabla g_\mu(w_1)[d] - \nabla g_\mu(w_2)[d]
+            \end{bmatrix}
+        \end{align*}
+
+        The maximum of $\Vert \nabla g_\mu(w_1) - \nabla g_\mu(w_2) \Vert_2$ happens when:
+
+        \begin{align*}
+            \nabla g_\mu(w_1) = \begin{bmatrix}
+                1 \\
+                \vdots \\
+                1
+            \end{bmatrix}
+            \quad \text{and} \quad
+            \nabla g_\mu(w_2) = \begin{bmatrix}
+                -1 \\
+                \vdots \\
+                -1
+            \end{bmatrix}
+        \end{align*}
+
+        which implies that:
+
+        \begin{align*}
+            w_1[i] \geq \mu, \ w_2[i] \leq - \mu \qquad \forall i = 1, \dots, d \tag{1}
+        \end{align*}
+
+        and we'll have:
+
+        \begin{align*}
+            \Vert \nabla g_\mu(w_1) - \nabla g_\mu(w_2) \Vert_2 
+            = \Vert \begin{bmatrix}
+                1 \\
+                \vdots \\
+                1
+            \end{bmatrix} - \begin{bmatrix}
+                -1 \\
+                \vdots \\
+                -1
+            \end{bmatrix} \Vert_2
+            = 2 \sqrt{d}
+        \end{align*}
+
+        Under the condition in $(1)$, if we want to find the minimium of $L \Vert w_1 - w_2 \Vert_2$, 
+        we can set $w_1[i] = \mu$ and $w_2[i] = - \mu$ for all $i = 1, \dots, d$, 
+        and we'll have:
+
+        \begin{align*}
+            L \Vert w_1 - w_2 \Vert_2 = L \Vert \begin{bmatrix}
+                \mu \\
+                \vdots \\
+                \mu
+            \end{bmatrix} - \begin{bmatrix}
+                - \mu \\
+                \vdots \\
+                - \mu
+            \end{bmatrix} \Vert_2 = L \sqrt{4 \mu^2 d} = L 2 \mu \sqrt{d}
+        \end{align*}
+
+        Thus, we can set $L = \frac{1}{\mu}$, and we'll have:
+
+        \begin{align*}
+            \Vert \nabla g_\mu(w_1) - \nabla g_\mu(w_2) \Vert_2 = 2 \sqrt{d} \leq 2 \sqrt{d} = \frac{1}{\mu} 2 \mu \sqrt{d} = \frac{1}{\mu} \Vert w_1 - w_2 \Vert_2 
         \end{align*}
     \end{claimproof}
-
 \end{solution}
 
 
