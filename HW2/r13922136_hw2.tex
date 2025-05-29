@@ -489,7 +489,6 @@ We need to show that the following function is self-concordant:
 
 \begin{solution}
 
-\textcolor{red}{Maybe need to first show that $\varphi(u)$ is convex}
 
 In order to show that $\varphi(u)$ is self-concordant, since $\varphi(u)$ is univariate, 
 we can directly use the following definition
@@ -622,15 +621,275 @@ we can directly use the following definition
     is also self-concordant.
 
 \end{claimproof}
-
-
-
-
-
-
-
 \end{solution}
 
+\newpage
+
+% Considering the given condition for learning a linear classifier, with data:
+
+% \begin{align*}
+%     (x_1, y_1), \dots, (x_n, y_n) \in \mathbb{R}^d \times \{\pm 1\}
+% \end{align*}
+
+% , $l_1$-regularized lasso yields the following optimization problem:
+
+% \begin{align*}
+%     w_\star \in \arg\min_{w \in \mathbb{R}^d} f(w) + \lambda g(w), \quad \text{with} \ \lambda > 0
+% \end{align*}
+
+
+\section*{6}
+
+We're given that:
+
+\begin{align*}
+    g_\mu(w) = \max_{v \in \mathcal{B}_\infty}\langle w, v \rangle - \frac{\mu}{2} \Vert v \Vert^2_2
+\end{align*}
+
+where $\mathcal{B}_\infty$ is the unit $l_\infty$ norm ball.
+\bigskip
+
+We need to show that $g_\mu$ is differentiable and:
+
+\begin{align*}
+    \nabla g_\mu(w) = 
+    \begin{cases}
+        1 \qquad &\text{if } w[i] \geq \mu \\
+        \frac{w[i]}{\mu} \qquad &\text{if } - \mu \leq w[i] \leq \mu \\
+        -1 \qquad &\text{if } w[i] < - \mu \\
+    \end{cases}
+\end{align*}
+
+\begin{solution}
+    % Since the dual of $l_\infty$ norm is $l_1$ norm, we have
+    % \footnote{S. Boyd, \textit{Convex Optimization}, 1st ed., Cambridge University Press, Cambridge, UK, 2004, p.~637.}:
+    % \begin{align*}
+    %     \sup \{{w^Tv \mid \Vert v \Vert_\infty \leq 1}\} = \sum_{i = 1}^d \vert w[i] \vert = \Vert w \Vert_1
+    % \end{align*}
+
+    By the definition of $l_\infty$ norm, we have:
+
+    \begin{align*}
+        \Vert v \Vert_\infty \leq 1 \iff \max_{i = 1, \dots, d} \vert v[i] \vert \leq 1
+    \end{align*}
+
+    Then the original $g_\mu(w)$ can be rewritten as:
+
+    \begin{align*}
+        g_\mu(w) = \max_{v \in \mathcal{B}_\infty} \sum_{i=1}^d \left( w[i] v[i] - \frac{\mu}{2} v[i]^2\right), \qquad \text{where } \Vert v \Vert_\infty \leq 1
+    \end{align*}
+
+    Since to find the $v$ that maximizes the above expression, 
+    we can independently find each $v[i]$ that maximizes the component in the summation, 
+    so we can further define:
+
+    \begin{align*}
+        h_i(w[i]) = \max_{|v[i]| \leq 1} \left( w[i] v[i] - \frac{\mu}{2} v[i]^2 \right)
+    \end{align*}
+
+    Then the original $g_\mu(w)$ can be rewritten as:
+
+    \begin{align*}
+        g_\mu(w) = \sum_{i=1}^d h_i(w[i])
+    \end{align*}
+
+    Now we can prove the differentiability of $g_\mu(w)$ by proving the differentiability of each $h_i(w[i])$.
+    Let:
+
+    \begin{align*}
+        f_{w[i]}(v[i]) = w[i] v[i] - \frac{\mu}{2} v[i]^2
+    \end{align*}
+
+    Since $w[i] v[i]$ is linear in $v[i]$, 
+    and the quadratic term $-\frac{\mu}{2} v[i]^2 < 0 \ (\text{for } \mu > 0)$, 
+    $f_{w[i]}(v[i])$ is concave in $v[i]$, 
+    which means that exists a unique $v^\star[i]$ that maximizes $f_{w[i]}(v[i])$, 
+    and we have:
+
+    \begin{align*}
+        \frac{d}{dv[i]} f_{w[i]}(v[i]) = w[i] - \mu v[i] = 0 \iff v[i]^* = \frac{w[i]}{\mu}
+    \end{align*}
+
+    Thus, if we do not restrict the solution to be in the unit ball, 
+    the $v$ that maximizes $\langle w, v \rangle - \frac{\mu}{2} \Vert v \Vert^2_2$ is:
+
+    \begin{align*}
+        v^* 
+        = \begin{bmatrix}
+            \frac{w[1]}{\mu} \\
+            \vdots \\
+            \frac{w[d]}{\mu}
+        \end{bmatrix}
+        = \begin{bmatrix}
+            v[1] \\
+            \vdots \\
+            v[d]
+        \end{bmatrix}
+    \end{align*}
+
+    To further impose the restriction that $\max_{i = 1, \dots, d} \vert v[i] \vert \leq 1$, 
+    the optimal $v$ need to satisfy:
+
+    \begin{align*}
+        v[i] \in [-1, 1]
+    \end{align*}
+
+    Thus, we need to project $v[i]$ to the interval $[-1, 1]$, 
+    by the following definition of Euclidean projection
+    \footnote{S. Boyd, \textit{Convex Optimization}, 1st ed., Cambridge University Press, Cambridge, UK, 2004, p.~399.}:
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width = 0.8\textwidth]{euclidean_projection.png}
+    \end{figure}
+
+    We have:
+
+    \begin{align*}
+        \text{proj}_{[-1, 1]}(v[i]) = \begin{cases}
+            -1 \qquad &\text{if } v[i] < -1 \\
+            v[i] \qquad &\text{if } -1 \leq v[i] \leq 1 \\
+            1 \qquad &\text{if } v[i] > 1 \\
+        \end{cases}
+    \end{align*}
+
+    or equivalently:
+
+    \begin{align*}
+        \text{proj}_{[-1, 1]}\left( \frac{w[i]}{\mu} \right) 
+        = v^\star(w[i])
+        = \begin{cases}
+            -1 \qquad &\text{if } w[i] < - \mu \\
+            \frac{w[i]}{\mu} \qquad &\text{if } \vert w[i]\vert \leq \mu \\
+            1 \qquad &\text{if } w[i] > \mu \\
+        \end{cases} \tag{1}
+    \end{align*}
+
+    And this matches the given $\nabla g_\mu(w)[i]$.
+    \bigskip
+
+    Then getting back to the part of proving differentiability, we have $h_i(w[i])$:
+
+    \begin{align*}
+        h_i(w[i]) 
+        &= \max_{|v[i]| \leq 1} \left( w[i] v[i] - \frac{\mu}{2} v[i]^2 \right) \\
+        &= \max_{|v[i]| \leq 1} \left(f_{w[i]}(v[i])\right) \\
+        &= f_{w[i]}(v^\star(w[i])) \\
+        &= w[i] v^\star (w[i]) - \frac{\mu}{2} (v^\star (w[i]))^2 \tag{2}
+    \end{align*}
+
+    Consider the three cases of $\text{proj}_{[-1, 1]}(v[i])$ in $(1)$:
+    \bigskip
+
+    \begin{itemize}
+        \item \underline{Case 1:} $w[i] < - \mu$
+        \bigskip
+
+        Then $v^\star(w[i]) = -1$, and by plugging it into $(2)$:
+        \begin{align*}
+            &h_i(w[i]) = w[i] (-1) - \frac{\mu}{2} (-1)^2 = - w[i] - \frac{\mu}{2} \\
+            \rightarrow \ & h_i'(w[i]) = \frac{d}{dw[i]} \left( - w[i] - \frac{\mu}{2} \right) = -1 \\
+        \end{align*}
+
+        \item \underline{Case 2:} $- \mu \leq w[i] \leq \mu$
+        \bigskip
+
+        Then $v^\star(w[i]) = \frac{w[i]}{\mu}$, and by plugging it into $(2)$:
+        \begin{align*}
+            &h_i(w[i]) = w[i] \frac{w[i]}{\mu} - \frac{\mu}{2} \left( \frac{w[i]}{\mu} \right)^2 = \frac{w[i]^2}{\mu} - \frac{\mu}{2} \frac{w[i]^2}{\mu^2} = \frac{w[i]^2}{2\mu} \\
+            \rightarrow \ & h_i'(w[i]) = \frac{d}{dw[i]} \left( \frac{w[i]^2}{2\mu} \right) = \frac{w[i]}{\mu} \\
+        \end{align*}
+
+        \item \underline{Case 3:} $w[i] > \mu$
+        \bigskip
+
+        Then $v^\star(w[i]) = 1$, and by plugging it into $(2)$:
+        \begin{align*}
+            &h_i(w[i]) = w[i] (1) - \frac{\mu}{2} (1)^2 = w[i] - \frac{\mu}{2} \\
+            \rightarrow \ & h_i'(w[i]) = \frac{d}{dw[i]} \left( w[i] - \frac{\mu}{2} \right) = 1 \\
+        \end{align*}
+    \end{itemize}
+
+    Thus, at the boundaries:
+
+    \begin{itemize}
+        \item $w[i] = \mu$
+        \bigskip
+
+        Left derivative:
+        \begin{align*}
+            \lim_{w[i] \to \mu^-} h_i'(w[i]) = \lim_{w[i] \to \mu^-} \frac{w[i]}{\mu} = \frac{\mu}{\mu} = 1
+        \end{align*}
+
+        Right derivative:
+        \begin{align*}
+            \lim_{w[i] \to \mu^+} h_i'(w[i]) = 1
+        \end{align*}
+
+        \item $w[i] = - \mu$
+        \bigskip
+
+        Left derivative:
+        \begin{align*}
+            \lim_{w[i] \to - \mu^-} h_i'(w[i]) = -1
+        \end{align*}
+
+        Right derivative:
+        \begin{align*}
+            \lim_{w[i] \to - \mu^+} h_i'(w[i]) = \lim_{w[i] \to - \mu^+} \frac{w[i]}{\mu} = \frac{- \mu}{\mu} = -1
+        \end{align*}
+    \end{itemize}
+
+    And in the interior:
+
+    \begin{align*}
+        h_i'(w[i]) 
+        &= w[i] \frac{w[i]}{\mu} - \frac{\mu}{2} \left(\frac{w[i]}{\mu}\right)^2 \\
+        &= \frac{w[i]^2}{\mu} - \frac{w[i]^2}{2\mu} \\
+        &= \frac{w[i]^2}{2\mu}
+    \end{align*}
+
+    Which always exists and is unique.
+    \bigskip
+
+    Therefore, $h_i(w[i])$ is differentiable, and $g_\mu(w) = \sum_{i=1}^d h_i(w[i])$ is a sum of differentiable functions, 
+    so $g_\mu(w)$ is also differentiable.
+    
+\end{solution}
+
+\section*{7}
+
+We need to further prove that $g_\mu$ is $\frac{1}{\mu}$-smooth.
+
+\begin{solution}
+
+    By the definition in the lecture note
+    \footnote{Lecture 4: Mirror Descent, p.~10}, we have:
+
+    \begin{tcolorbox}[bluebox, title = $L$-Smooth]
+        We say a differentiable function $f: \mathbb{R}^d \to \mathbb{R}$ is $L$-smooth for some $L > 0$ if:
+
+        \begin{align*}
+            f(y) \leq f(x) + \langle \nabla f(x), y - x \rangle + \frac{L}{2} \Vert y - x \Vert_2^2, \qquad \forall x, y \in \mathbb{R}^d
+        \end{align*}
+    \end{tcolorbox}
+
+    \begin{claim}
+        \begin{align*}
+            g_\mu(w_1) \leq g_\mu(w_2) + \langle \nabla g_\mu(w_2), w_1 - w_2 \rangle + \frac{1}{2\mu} \Vert w_1 - w_2 \Vert_2^2, \qquad \forall w_1, w_2 \in \mathbb{R}^d
+        \end{align*}
+    \end{claim}
+
+    \begin{claimproof}
+        \begin{align*}
+            g_\mu(w_1) 
+            &= \max_{v \in \mathcal{B}_\infty} \langle y, v \rangle - \frac{\mu}{2} \Vert v \Vert^2_2 \\
+            &= \max_{v \in \mathcal{B}_\infty} \langle x, v \rangle - \frac{\mu}{2} \Vert v \Vert^2_2 + \langle y - x, v \rangle \\
+            &= g_\mu(x) + \langle y - x, v \rangle
+        \end{align*}
+    \end{claimproof}
+
+\end{solution}
 
 
 
