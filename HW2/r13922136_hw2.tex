@@ -19,7 +19,11 @@
 \newenvironment{solution}
   {\renewcommand\qedsymbol{$\blacksquare$}\begin{proof}[Solution]}
   {\end{proof}}
+
+\newenvironment{claim}[1]{\par\noindent\underline{Claim:}\space#1}{}
+\newenvironment{claimproof}[1]{\par\noindent\underline{Proof:}\space#1}{}
 \DeclareMathOperator{\interior}{int}
+
 
 \title{Optimization Algorithms: HW2}
 \author{Lo Chun, Chou \\ R13922136}
@@ -316,6 +320,7 @@ $\begin{bmatrix}
     \frac{1}{d}
 \end{bmatrix}$ 
 to represent the vector $(1/d, \dots, 1/d)$ (which is the notation used in the HW spec) in the following solution.
+
 \section*{2}
 
 Show that for any $x \in \Delta_d$ and $0 \leq \alpha < 1$,
@@ -362,14 +367,25 @@ Also, for each element in $x_\alpha$, we have:
 \end{align*}
 
 Since $x[i] \geq 0$ and $\alpha$ is strictly smaller than $1$,
-we have $x_\alpha[i] > 0$ for all $i = 1, \dots, d$,
-so $x_\alpha \in \interior \Delta_d$.
+consider the case that $0 < \alpha < 1$, then we have $x_\alpha[i] > 0$ for all $i = 1, \dots, d$.
+For $\alpha = 0$, we have $x_\alpha[i] = x[i] \geq 0$ for all $i = 1, \dots, d$,
+\textcolor{red}{and since in order to use the previous inequality, we need $x \in \interior \Delta_d$,
+thus each $x[i]$ is strictly positive, so we have $x_\alpha \in \interior \Delta_d$ 
+for $\alpha = 0$ (and also for $0 < \alpha < 1$).
+}
+\bigskip
+
+\textcolor{red}{
+$\rightarrow$ need to be true for all $x \in \Delta_d$
+}
+
+
 \bigskip
 
 Then, we have:
 
 \begin{align*}
-    f(x_\alpha) \leq f(x) + \langle \nabla f(x), x_\alpha - x \rangle + L D_h(x_\alpha, x)
+    f(x_\alpha) \leq f(x) + \langle \nabla f(x), x_\alpha - x \rangle + D_h(x_\alpha, x)
 \end{align*}
 
 To further simplify, we have:
@@ -424,9 +440,10 @@ By the definition of $D_h$, we have:
         -\frac{1}{x[d]}
         \end{bmatrix}}, 
     \textcolor{blue}{\alpha \left( \begin{bmatrix}
-    \frac{1}{d} \\
-    \vdots \\
-    \frac{1}{d} \end{bmatrix} - x \right) \rangle} \right) \\
+        \frac{1}{d} \\
+        \vdots \\
+        \frac{1}{d}
+    \end{bmatrix} - x \right) \rangle} \right) \\
     &= -\sum_{i=1}^d \log x_\alpha[i] - \left( -\sum_{i=1}^d \log x[i] + \langle 
     \begin{bmatrix}
         -\frac{1}{x[1]} \\
@@ -456,6 +473,156 @@ Combining (1) and (2), we have:
         + \sum_{i = 1}^d (\log x[i] - \log x_\alpha[i]) - \sum_{i = 1}^d \frac{\alpha}{d x[i]} + \alpha d \\
     &= 
 \end{align*}
+\end{solution}
+
+\section*{3}
+
+\section*{4}
+
+\section*{5}
+
+We need to show that the following function is self-concordant:
+
+\begin{align*}
+    \varphi(u) = u - \sum_{i=1}^d \log (u + \nabla f(x_t)[i] + \frac{1}{x_t[i]})
+\end{align*}
+
+\begin{solution}
+
+\textcolor{red}{Maybe need to first show that $\varphi(u)$ is convex}
+
+In order to show that $\varphi(u)$ is self-concordant, since $\varphi(u)$ is univariate, 
+we can directly use the following definition
+\footnote{\textit{Self-concordant function}, available at: \url{https://en.wikipedia.org/wiki/Self-concordant_function\#Univariate_self-concordant_function}, accessed: May.~29, 2025.}:
+% \footnote{Y. Nesterov, \textit{Introductory Lectures on Convex Optimization: A Basic Course}, 1st ed., Springer, New York, NY, 2004, p.~161.}:
+
+% \begin{figure}[H]
+%     \centering
+%     \includegraphics[width = 0.8\textwidth]{self_concordant_def.png}
+% \end{figure}
+
+\begin{tcolorbox}[bluebox, title = Self-concordant for univariate functions]
+    A function $f: \mathbb{R} \to \mathbb{R}$ is self-concordant on $\mathbb{R}$ if :
+    \begin{align*}
+        |f'''(x)| \leq 2 f''(x)^{3/2}
+    \end{align*}
+\end{tcolorbox}
+
+\begin{claim}
+    \begin{align*}
+        |\varphi'''(u)| \leq 2 \varphi''(u)^{3/2}
+    \end{align*}
+\end{claim}
+
+\begin{claimproof}
+    Let us define:
+
+    \begin{align*}
+        y_i := u + \nabla f(x_t)[i] + \frac{1}{x_t[i]}, \qquad \forall i = 1, \dots, d
+    \end{align*}
+
+    Then, the original function $\varphi(u)$ can be rewritten as:
+
+    \begin{align*}
+        \varphi(u) = u - \sum_{i=1}^d \log y_i = u + \sum_{i=1}^d (-\log y_i)
+    \end{align*}
+
+    Now we can compute the dirivatives of $\varphi(u)$:
+
+    \begin{align*}
+        \varphi'(u) = 1 - \sum_{i=1}^d \frac{1}{y_i}
+    \end{align*}
+    
+    and the second derivative:
+
+    \begin{align*}
+        \varphi''(u) = \sum_{i=1}^d \frac{1}{y_i^2}
+    \end{align*}
+
+    and the third derivative:
+    
+    \begin{align*}
+        \varphi'''(u) = -2 \sum_{i=1}^d \frac{1}{y_i^3}
+    \end{align*}
+
+    Now we have:
+    
+    \begin{align*}
+        |\varphi'''(u)| &= 2 \sum_{i=1}^d \frac{1}{y_i^3} \\
+        \varphi''(u) &= \sum_{i=1}^d \frac{1}{y_i^2} \\
+    \end{align*}
+
+    % Then we calculate $2\varphi''(u)^{3/2}$:
+
+    % \begin{align*}
+    %     2\varphi''(u)^{3/2} 
+    %     &= 2 \left( \sum_{i=1}^d \frac{1}{y_i^2} \right)^{3/2} \\
+    %     &=  \\
+    % \end{align*}
+
+    In order to let the original definition of $\varphi(u)$ be valid, $y_i \in (0, \infty)$ must hold, 
+    thus, if we further define $g(y_i) = - \log y_i$, 
+    then 
+    
+    \begin{align*}
+        g : \{y_i \in \mathbb{R} \mid y_i > 0\} \rightarrow \mathbb{R}
+    \end{align*}
+
+    , and we have:
+
+    \begin{align*}
+        g'(y_i) &= \frac{d}{dy_i} (- \log y_i) = -\frac{1}{y_i} \\
+        g''(y_i) &= \frac{d}{dy_i} \left( -\frac{1}{y_i} \right) = \frac{1}{y_i^2} \\
+        g'''(y_i) &= \frac{d}{dy_i} \left( \frac{1}{y_i^2} \right) = -\frac{2}{y_i^3} \\
+    \end{align*}
+
+    And we have:
+
+    \begin{align*}
+        \mid g'''(y_i) \mid = \mid -\frac{2}{y_i^3} \mid = \frac{2}{y_i^3} \leq 2 \left( \frac{1}{y_i^2} \right)^{3/2} = 2 \left(\frac{1}{y_i^3} \right)
+    \end{align*}
+
+    Which shows that $g(y_i)$ is self-concordant.
+    \bigskip
+
+    Then, using the following property
+    \footnote{G. Farina, \textit{Lecture 14A–B: Self-concordant functions}, MIT 6.7220/15.084 — Nonlinear Optimization, Apr.~16--18$^{\text{th}}$ 2024. Available at: \url{https://www.mit.edu/~gfarina/2024/67220s24_L14B_self_concordance/L14.pdf}, p.~4.}:
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width = 0.8\textwidth]{sum_self_concordant.png}
+    \end{figure}
+
+    Since $g(y_i)$ is self-concordant for all $i = 1, \dots, d$,
+    and they have the same domain, so $\bigcap_{i = 1}^d \domain g(y_i) \neq \emptyset$,
+    thus, their sum:
+
+    \begin{align*}
+        \sum_{i = 1}^d g(y_i) = \sum_{i = 1}^d (-\log y_i)
+    \end{align*}
+
+    is also self-concordant.
+
+    \bigskip
+
+    Then, using another property:
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width = 0.8\textwidth]{affine_self_concordant.png}
+    \end{figure}
+
+    If we let $h(u) = u$, then $h$ is an affine function, 
+    then our self concordant function $\sum_{i = 1}^d (-\log y_i)$ plussing the affine function $h$:
+
+    \begin{align*}
+        \varphi(u) = u + \sum_{i = 1}^d (-\log y_i) 
+    \end{align*}
+
+    is also self-concordant.
+
+\end{claimproof}
+
 
 
 
@@ -463,5 +630,8 @@ Combining (1) and (2), we have:
 
 
 \end{solution}
+
+
+
 
 \end{document}
