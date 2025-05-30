@@ -1189,6 +1189,96 @@ We're asked to show that:
         g_\mu(w) \leq \Vert w \Vert_1  = \sum_{i=1}^d \vert w[i] \vert \leq g_\mu(w) + \frac{\mu d}{2} 
     \end{align*} 
 
+    We prove this by showing the two inequalities separately.
+
+    \begin{itemize}
+        \item \underline{$g_\mu(w) \leq g(w)$} 
+        \bigskip
+
+        Since the dual norm of $\Vert \cdot \Vert_1$ is $\Vert \cdot \Vert_\infty$, 
+        we can rewrite the one norm $\Vert w \Vert_1$ as
+        \footnote{S. Boyd, \textit{Convex Optimization}, 1st ed., Cambridge University Press, Cambridge, UK, 2004, p.~637.}:
+
+        \begin{align*}
+            g(w) = \Vert w \Vert_1 = \sup \{w^T v \mid \Vert v \Vert_\infty \leq 1\}
+        \end{align*}
+        
+        Compared with the definition of $g_\mu(w)$, we have:
+
+        \begin{align*}
+            g_\mu(w) = \max_{v \in \mathcal{B}_\infty} \langle w, v \rangle - \frac{\mu}{2} \Vert v \Vert_2^2
+        \end{align*}
+
+        Since $\mu$ is positive, and the square of a two norm $\Vert v \Vert_2^2$ is always non-negative, 
+        the term $\frac{\mu}{2} \Vert v \Vert_2^2$ is always non-negative, thus:
+
+        \begin{align*}
+            g_\mu(w) = \max_{v \in \mathcal{B}_\infty} \langle w, v \rangle - \frac{\mu}{2} \Vert v \Vert_2^2 
+            \leq \sup \{w^T v \mid \Vert v \Vert_\infty \leq 1\} = g(w)
+        \end{align*}
+
+        \item \underline{$g(w) \leq g_\mu(w) + \frac{\mu d}{2}$}
+        \bigskip
+
+        Observe that:
+
+        \begin{align*}
+            g(w)
+            = \Vert w \Vert_1 
+            = \sum_{i=1}^d \vert w[i] \vert 
+            = \left[ w[1] \cdots w[d] \right] 
+            \begin{bmatrix}
+                \mathrm{sign}(w[1]) \\
+                \vdots \\
+                \mathrm{sign}(w[d])
+            \end{bmatrix}
+            = \langle w, \mathrm{sign}(w) \rangle
+        \end{align*}
+
+        where $\mathrm{sign}(w)$ is the sign function, which is defined as:
+        
+        \begin{align*}
+            \mathrm{sign}(w[i]) = \begin{cases}
+                1 \qquad &\text{if } w[i] > 0 \\
+                -1 \qquad &\text{if } w[i] \leq 0 \\
+            \end{cases}
+        \end{align*}
+
+        Then let:
+
+        \begin{align*}
+            v^\star = \arg\max_{v \in \mathcal{B}_\infty} \langle w, v \rangle = \mathrm{sign}(w)
+        \end{align*}
+
+        Since for all elements in $\mathrm{sign}(w)$, its value is either $1$ or $-1$, 
+        $\mathrm{sign}(w) \in \mathcal{B}_\infty$.
+
+        Thus, we can write:
+
+        \begin{align*}
+            g_\mu(w) 
+            &= \langle w, \mathrm{sign}(w) \rangle - \frac{\mu}{2} \Vert \mathrm{sign}(w) \Vert_2^2 \\
+            &= g(w) - \frac{\mu}{2} \cdot d \\
+        \end{align*}
+
+        And we can get the following inequality:
+
+        \begin{align*}
+            g_\mu(w) 
+            &= \max_{v \in \mathcal{B}_\infty} \langle w, v \rangle - \frac{\mu}{2} \Vert v \Vert_2^2 \\
+            &\geq \langle w, v^\star \rangle - \frac{\mu}{2} \Vert v^\star \Vert_2^2 \\
+            &= g(w) - \frac{\mu}{2} d \\
+        \end{align*}
+
+        Therefore:
+
+        \begin{align*}
+            & g_\mu(w) \geq g(w) - \frac{\mu}{2} d \\
+            \rightarrow \ & g(w) \leq g_\mu(w) + \frac{\mu d}{2}
+        \end{align*}
+    \end{itemize}
 \end{solution}
+
+
 
 \end{document}
