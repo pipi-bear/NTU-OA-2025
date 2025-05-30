@@ -1279,6 +1279,203 @@ We're asked to show that:
     \end{itemize}
 \end{solution}
 
+\section*{9}
 
+\begin{solution}
+
+    We're given:
+
+    \begin{align*}
+        F = f + \lambda g
+    \end{align*}
+
+    \begin{claim}
+        \begin{align*}
+            F(w_{T+1}) - F(w_\star) 
+            \leq 
+            \frac{\lambda \sqrt{d}}{2 \sqrt{T}} \left( \| w_1 - w_\star \|_2^2 + 1 \right) + \frac{ L \|w_1 - w_\star\|_2^2}{2T}
+        \end{align*}
+    \end{claim}
+
+    \begin{claimproof}
+        \bigskip
+
+        Let us define:
+
+        \begin{align*}
+            F_\mu(w) = f(w) + \lambda g_\mu(w)
+        \end{align*}
+
+        which is a little bit different from the original $F$ in the problem statement by replacing $g_\mu(w)$ with $g(w)$.
+        \bigskip
+
+        In the solution process, I aimed to use the following theorem
+        \footnote{Lecture 6 of \textit{10-725: Optimization}, taught by Ryan Tibshirani at Carnegie Mellon University in Fall 2013. Scribed by Micol Marchetti-Bowick. URL: \url{https://www.stat.cmu.edu/~ryantibs/convexopt-F13/scribes/lec6.pdf}, p.~6-1}:
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width = 0.8\textwidth]{gradient_descent_convergence.png}
+        \end{figure}
+
+        Thus we need to prove the differentiability, convexity, and smoothness of $F_\mu(w)$.
+        \bigskip
+
+        \underline{$F_\mu(w)$ differentiable:}
+        \bigskip
+
+        We're given that $f$ is differentiable, and in the previous problem $6$, we have proved that $g_\mu(w)$ is differentiable, 
+        thus $F_\mu(w)$ is differentiable.
+        \bigskip
+
+        \underline{$F_\mu(w)$ convex:}
+        \bigskip
+
+        We're given that $f$ is convex, so it remained to show that $g_\mu(w)$ is convex.
+
+        \begin{align*}
+            g_\mu(w) = \max_{v \in \mathcal{B}_\infty} \langle w, v \rangle - \frac{\mu}{2} \Vert v \Vert_2^2
+        \end{align*}
+
+        Since $\langle w, v \rangle - \frac{\mu}{2} \Vert v \Vert_2^2$ is affine, it is convex, 
+        and taking the maximum of a convex function is convex, thus $g_\mu(w)$ is convex.
+        \bigskip
+
+        With both $f$ and $g_\mu(w)$ being convex, 
+        and the operations of addition and multiplication by a constant preserve convexity, 
+        $F_\mu(w)$ is convex.
+        \bigskip
+
+        \underline{$F_\mu(w)$ smooth:}
+        \bigskip
+
+        We're given that $f$ is $L$-smooth, 
+        and in the previous problem $7$, we have proved that $g_\mu(w)$ is $\frac{1}{\mu}$-smooth, 
+        thus by the definition of $L$-smoothness
+        \footnote{A. Sidford, \textit{MS\&E 213 / CS 269O: Chapter 2 — Smooth Functions}, Stanford University, Oct.~17, 2020. Available at: \url{https://web.stanford.edu/~sidford/courses/20fa_opt_theory/sidford_mse213_2020fa_chap_2_smoothness.pdf}, p.~2.}:
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width = 0.8\textwidth]{L_smooth_def.png}
+        \end{figure}
+
+        % thus by the following lemma
+        % \footnote{Reza Zadeh, *CME 323: Distributed Algorithms and Optimization, Spring 2020*, Lecture 8, 
+        % scribed by Andreas Santucci, edited by Robin Brown, Stanford University, Apr. 23, 2020. 
+        % Available at: \url{https://stanford.edu/~rezab/dao/notes/L08/cme323_lec8.pdf}, p.~4.}:
+        
+        % \begin{figure}[H]
+        %     \centering
+        %     \includegraphics[width = 0.8\textwidth]{L_smooth_bound.png}
+        % \end{figure}
+        
+        % we have:
+
+        % \begin{align*}
+        %     g_\mu(w_{T+1}) - g_\mu(w_\star) 
+        %     \leq 
+        %     \frac{1}{2\mu} \Vert w_{T+1} - w_\star \Vert_2^2
+        % \end{align*}
+
+        we have:
+
+        \begin{align*}
+            \Vert \nabla f(w_1) - \nabla f(w_2) \Vert_2 &\leq L \Vert w_1 - w_2 \Vert_2 \\ 
+            \Vert \nabla g_\mu(w_1) - \nabla g_\mu(w_2) \Vert_2 &\leq \frac{1}{\mu} \Vert w_1 - w_2 \Vert_2 \tag{1}
+        \end{align*}
+
+        We then take gradient to the definition of $F_\mu(w)$:
+
+        \begin{align*}
+            \nabla F_\mu(w) = \nabla f(w) + \lambda \nabla g_\mu(w)
+        \end{align*}
+
+        with triangle inequality, and replace $(1)$ in, we have:
+
+        \begin{align*}
+            \Vert \nabla F_\mu(w_1) - \nabla F_\mu(w_2) \Vert_2 
+            &= \Vert \nabla f(w_1) + \lambda \nabla g_\mu(w_1) - \nabla f(w_2) - \lambda \nabla g_\mu(w_2) \Vert_2 \\
+            &= \Vert \nabla f(w_1) - \nabla f(w_2) + \lambda \nabla g_\mu(w_1) - \lambda \nabla g_\mu(w_2) \Vert_2 \\
+            &\leq \Vert \nabla f(w_1) - \nabla f(w_2) \Vert_2 + \lambda \Vert \nabla g_\mu(w_1) - \nabla g_\mu(w_2) \Vert_2 \\
+            &\leq L \Vert w_1 - w_2 \Vert_2 + \frac{\lambda}{\mu} \Vert w_1 - w_2 \Vert_2 \\
+            &= \left(L + \frac{\lambda}{\mu}\right) \Vert w_1 - w_2 \Vert_2
+        \end{align*}
+
+        Thus we have derived that $F_\mu(w)$ is $L + \frac{\lambda}{\mu}$-smooth.
+        \bigskip
+
+        Thus we can use the theorem above and get:
+
+        \begin{align*}
+            F_\mu(w_{T+1}) - F_\mu(w_\star) 
+            &\leq \frac{\left(L + \frac{\lambda}{\mu}\right) \Vert w_1 - w_\star \Vert^2_2}{2T} \\
+            % &= \frac{\left(\frac{\lambda}{\mu}\right) \Vert w_1 - w_\star \Vert^2_2}{2T} + \frac{L \Vert w_1 - w_\star \Vert^2_2}{2T} \\
+        \end{align*}
+
+        From problem $8$, we have proved that:
+
+        \begin{align*}
+            g_\mu(w) \leq g(w) \leq g_\mu(w) + \frac{\mu d}{2}
+        \end{align*}
+
+        so we have:
+
+        \begin{align*}
+            g(w_{T+1}) &\leq g_\mu(w_{T+1}) + \frac{\mu d}{2} \\
+            g_\mu(w_\star) &\leq g(w_\star) \qquad (\text{or } -g(w_\star) \leq -g_\mu(w_\star))
+        \end{align*}
+
+        and we could finally derive:
+
+        \begin{align*}
+            F(w_{T+1}) - F(w_\star) 
+            &= f(w_{T+1}) + \lambda \textcolor{blue}{g(w_{T+1})} - f(w_\star) - \lambda \textcolor{blue}{g(w_\star)} \\
+            &\leq f(w_{T+1}) + \lambda \textcolor{blue}{\left(g_\mu(w_{T+1}) + \frac{\mu d}{2}\right)} - f(w_\star) - \lambda \textcolor{blue}{\left(g_\mu(w_\star)\right)} \\
+            &= \textcolor{Green}{f(w_{T+1}) + \lambda \left(g_\mu(w_{T+1})\right)} + \frac{\lambda \mu d}{2} \textcolor{Green}{- f(w_\star) - \lambda \left(g_\mu(w_\star)\right)} \\
+            &= \textcolor{Green}{F_\mu(w_{T+1}) - F_\mu(w_\star) } + \frac{\lambda \mu d}{2} \\
+            &\leq \frac{\left(L + \frac{\lambda}{\mu}\right) \Vert w_1 - w_\star \Vert^2_2}{2T} + \frac{\lambda \mu d}{2} \\
+            &= \frac{L \Vert w_1 - w_\star \Vert^2_2}{2T} + \frac{\frac{\lambda}{\mu} \Vert w_1 - w_\star \Vert^2_2}{2T} + \frac{\lambda \mu d}{2} \\
+            &= \frac{L \Vert w_1 - w_\star \Vert^2_2}{2T} + \frac{\lambda \left( \frac{1}{\mu} \Vert w_1 - w_\star \Vert^2_2 + T \mu d \right)}{2T} \tag{*}
+        \end{align*}
+
+        By setting $\mu = \frac{1}{\sqrt{Td}}$, we have:
+
+        \begin{align*}
+            F(w_{T+1}) - F(w_\star) 
+            &\leq \frac{L \Vert w_1 - w_\star \Vert^2_2}{2T} + \frac{\lambda \left( \frac{1}{\mu} \Vert w_1 - w_\star \Vert^2_2 + T \mu d \right)}{2T} \\
+            &= \frac{L \Vert w_1 - w_\star \Vert^2_2}{2T} + \frac{\lambda \left( \sqrt{Td} \Vert w_1 - w_\star \Vert^2_2 + T \frac{1}{\sqrt{Td}} d \right)}{2T} \\
+            &= \frac{L \Vert w_1 - w_\star \Vert^2_2}{2T} + \frac{\lambda \left( \sqrt{Td} \Vert w_1 - w_\star \Vert^2_2 + \sqrt{Td} \right)}{2T} \\
+            &= \frac{L \Vert w_1 - w_\star \Vert^2_2}{2T} + \frac{\lambda \sqrt{Td} \left( \Vert w_1 - w_\star \Vert^2_2 + 1 \right)}{2T} \\
+            &= \frac{L \Vert w_1 - w_\star \Vert^2_2}{2T} + \frac{\lambda \sqrt{d} \left( \Vert w_1 - w_\star \Vert^2_2 + 1 \right)}{2\sqrt{T}} \\
+        \end{align*}
+        
+        Which is the required bound.
+    \end{claimproof}
+\end{solution}
+
+\section*{10}
+
+\begin{solution}
+If we want to get a tighter bound using accelerated gradient descent and choose other value of $\mu$, 
+we should take the derivative w.r.t. $\mu$ and set it to $0$ to get the optimal $\mu$:
+
+\begin{align*}
+    &\frac{d}{d\mu} \left( \frac{\left(L + \frac{\lambda}{\mu}\right) \Vert w_1 - w_\star \Vert^2_2}{2T} + \frac{\lambda \mu d}{2} \right) = 0 \\
+    \rightarrow \ & \frac{\left(-\lambda\right) \Vert w_1 - w_\star \Vert^2_2}{2T\mu^2} + \frac{\lambda d}{2} = 0 \\
+    \rightarrow \ & \frac{\lambda d}{2} = \frac{\lambda \Vert w_1 - w_\star \Vert^2_2}{2T\mu^2} \\
+    \rightarrow \ & d = \frac{\Vert w_1 - w_\star \Vert^2_2}{T\mu^2} \\
+    \rightarrow \ & \mu^2 = \frac{\Vert w_1 - w_\star \Vert^2_2}{Td} \\
+    \rightarrow \ & \mu = \sqrt{\frac{\Vert w_1 - w_\star \Vert^2_2}{Td}} \\
+    \rightarrow \ & \mu = \sqrt{\frac{\Vert w_1 - w_\star \Vert^2_2}{Td}}
+\end{align*}
+
+Substitute $\mu = \sqrt{\frac{\Vert w_1 - w_\star \Vert^2_2}{Td}}$ into $(*)$, we have:
+
+\begin{align*}
+    F(w_{T+1}) - F(w_\star) 
+    &\leq \frac{L \Vert w_1 - w_\star \Vert^2_2}{2T} + \frac{\lambda \left( \frac{1}{\mu} \Vert w_1 - w_\star \Vert^2_2 + T \mu d \right)}{2T} \\
+    &= \frac{L \Vert w_1 - w_\star \Vert^2_2}{2T} + \frac{\lambda \left( \frac{1}{\sqrt{\frac{\Vert w_1 - w_\star \Vert^2_2}{Td}}} \Vert w_1 - w_\star \Vert^2_2 + T \sqrt{\frac{\Vert w_1 - w_\star \Vert^2_2}{Td}} d \right)}{2T} \\
+\end{align*}
+
+\end{solution}
 
 \end{document}
