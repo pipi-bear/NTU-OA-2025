@@ -367,15 +367,14 @@ Also, for each element in $x_\alpha$, we have:
 Since $x[i] \geq 0$ and $\alpha$ is strictly smaller than $1$,
 consider the case that $0 < \alpha < 1$, then we have $x_\alpha[i] > 0$ for all $i = 1, \dots, d$.
 For $\alpha = 0$, we have $x_\alpha[i] = x[i] \geq 0$ for all $i = 1, \dots, d$,
-\textcolor{red}{and since in order to use the previous inequality, we need $x \in \interior \Delta_d$,
+and since in order to use the previous inequality, we need $x \in \interior \Delta_d$,
 thus each $x[i]$ is strictly positive, so we have $x_\alpha \in \interior \Delta_d$ 
 for $\alpha = 0$ (and also for $0 < \alpha < 1$).
-}
 \bigskip
 
-\textcolor{red}{
-$\rightarrow$ need to be true for all $x \in \Delta_d$
-}
+% \textcolor{red}{
+% $\rightarrow$ need to be true for all $x \in \Delta_d$
+% }
 
 
 \bigskip
@@ -1455,27 +1454,101 @@ We're asked to show that:
 \section*{10}
 
 \begin{solution}
-If we want to get a tighter bound using accelerated gradient descent and choose other value of $\mu$, 
-we should take the derivative w.r.t. $\mu$ and set it to $0$ to get the optimal $\mu$:
+    % we should take the derivative w.r.t. $\mu$ and set it to $0$ to get the optimal $\mu$:
+    
+% \begin{align*}
+%     &\frac{d}{d\mu} \left( \frac{\left(L + \frac{\lambda}{\mu}\right) \Vert w_1 - w_\star \Vert^2_2}{2T} + \frac{\lambda \mu d}{2} \right) = 0 \\
+%     \rightarrow \ & \frac{\left(-\lambda\right) \Vert w_1 - w_\star \Vert^2_2}{2T\mu^2} + \frac{\lambda d}{2} = 0 \\
+%     \rightarrow \ & \frac{\lambda d}{2} = \frac{\lambda \Vert w_1 - w_\star \Vert^2_2}{2T\mu^2} \\
+%     \rightarrow \ & d = \frac{\Vert w_1 - w_\star \Vert^2_2}{T\mu^2} \\
+%     \rightarrow \ & \mu^2 = \frac{\Vert w_1 - w_\star \Vert^2_2}{Td} \\
+%     \rightarrow \ & \mu = \sqrt{\frac{\Vert w_1 - w_\star \Vert^2_2}{Td}} \\
+%     \rightarrow \ & \mu = \sqrt{\frac{\Vert w_1 - w_\star \Vert^2_2}{Td}}
+% \end{align*}
 
-\begin{align*}
-    &\frac{d}{d\mu} \left( \frac{\left(L + \frac{\lambda}{\mu}\right) \Vert w_1 - w_\star \Vert^2_2}{2T} + \frac{\lambda \mu d}{2} \right) = 0 \\
-    \rightarrow \ & \frac{\left(-\lambda\right) \Vert w_1 - w_\star \Vert^2_2}{2T\mu^2} + \frac{\lambda d}{2} = 0 \\
-    \rightarrow \ & \frac{\lambda d}{2} = \frac{\lambda \Vert w_1 - w_\star \Vert^2_2}{2T\mu^2} \\
-    \rightarrow \ & d = \frac{\Vert w_1 - w_\star \Vert^2_2}{T\mu^2} \\
-    \rightarrow \ & \mu^2 = \frac{\Vert w_1 - w_\star \Vert^2_2}{Td} \\
-    \rightarrow \ & \mu = \sqrt{\frac{\Vert w_1 - w_\star \Vert^2_2}{Td}} \\
-    \rightarrow \ & \mu = \sqrt{\frac{\Vert w_1 - w_\star \Vert^2_2}{Td}}
-\end{align*}
+% Substitute $\mu = \sqrt{\frac{\Vert w_1 - w_\star \Vert^2_2}{Td}}$ into $(*)$, we have:
 
-Substitute $\mu = \sqrt{\frac{\Vert w_1 - w_\star \Vert^2_2}{Td}}$ into $(*)$, we have:
+% \begin{align*}
+%     F(w_{T+1}) - F(w_\star) 
+%     &\leq \frac{L \Vert w_1 - w_\star \Vert^2_2}{2T} + \frac{\lambda \left( \frac{1}{\mu} \Vert w_1 - w_\star \Vert^2_2 + T \mu d \right)}{2T} \\
+%     &= \frac{L \Vert w_1 - w_\star \Vert^2_2}{2T} + \frac{\lambda \left( \frac{1}{\sqrt{\frac{\Vert w_1 - w_\star \Vert^2_2}{Td}}} \Vert w_1 - w_\star \Vert^2_2 + T \sqrt{\frac{\Vert w_1 - w_\star \Vert^2_2}{Td}} d \right)}{2T} \\
+% \end{align*}
 
-\begin{align*}
-    F(w_{T+1}) - F(w_\star) 
-    &\leq \frac{L \Vert w_1 - w_\star \Vert^2_2}{2T} + \frac{\lambda \left( \frac{1}{\mu} \Vert w_1 - w_\star \Vert^2_2 + T \mu d \right)}{2T} \\
-    &= \frac{L \Vert w_1 - w_\star \Vert^2_2}{2T} + \frac{\lambda \left( \frac{1}{\sqrt{\frac{\Vert w_1 - w_\star \Vert^2_2}{Td}}} \Vert w_1 - w_\star \Vert^2_2 + T \sqrt{\frac{\Vert w_1 - w_\star \Vert^2_2}{Td}} d \right)}{2T} \\
-\end{align*}
+    We want to get a tighter bound using accelerated gradient descent and choose other value of $\mu$. 
+    By the following theorem
+    \footnote{Sébastien Bubeck. \textit{Convex Optimization: Algorithms and Complexity}. 
+    Foundations and Trends\textsuperscript{\textregistered} in Machine Learning, Vol. 8, No. 3-4 (2015), pp. 231–357. Page 294. 
+    DOI: 10.1561/2200000050. Available at: \url{http://sbubeck.com/Bubeck15.pdf}}:
 
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width = 0.8\textwidth]{NAG.png}
+    \end{figure}
+
+    Since we derived that our $F_\mu(w)$ is $L + \frac{\lambda}{\mu}$-smooth in the previous problem $9$, 
+    we have the following inequality:
+
+    \begin{align*}
+        F_\mu(w_{T+1}) - F_\mu(w_\star) 
+        &\leq \frac{ 2 \left(L + \frac{\lambda}{\mu}\right) \Vert w_1 - w_\star \Vert^2_2}{T^2} \\
+    \end{align*}
+
+    Using the same process as in problem $9$ 
+    (please refer to the last part, especially the part with tag $(*)$ if needed)
+    , we derive the bound on $F(w_{T+1}) - F(w_\star)$:
+
+    \begin{align*}
+        F(w_{T+1}) - F(w_\star) 
+        &\leq \frac{ 2 \left(L + \frac{\lambda}{\mu}\right) \Vert w_1 - w_\star \Vert^2_2}{T^2} + \frac{\lambda \mu d}{2} \\
+    \end{align*}
+
+    To show the improved optimization error bound, 
+    we should take the derivative w.r.t. $\mu$ and set it to $0$ to get the optimal minimum value of the righthand side:
+
+    \begin{align*}
+        &\frac{d}{d\mu} \left( \frac{ 2 \left(L + \frac{\lambda}{\mu}\right) \Vert w_1 - w_\star \Vert^2_2}{T^2} + \frac{\lambda \mu d}{2} \right) = 0 \\
+        \rightarrow \ & \frac{2 \lambda \Vert w_1 - w_\star \Vert^2_2}{T^2} \frac{d}{d\mu} \left( \frac{1}{\mu} \right) = - \frac{\lambda d}{2} \\
+        \rightarrow \ & \frac{2 \lambda \Vert w_1 - w_\star \Vert^2_2}{T^2 \mu^2} = \frac{\lambda d}{2} \\
+        \rightarrow \ & \frac{4 \Vert w_1 - w_\star \Vert^2_2}{d T^2 } = \mu^2 \\
+        \rightarrow \ & \mu = \frac{2 \Vert w_1 - w_\star \Vert_2}{\sqrt{d} T} \\
+    \end{align*}
+
+    Substitute $\mu = \frac{2 \Vert w_1 - w_\star \Vert_2}{\sqrt{d} T}$ into the bound on $F(w_{T+1}) - F(w_\star)$, we have:
+
+    \begin{align*}
+        F(w_{T+1}) - F(w_\star) 
+        &\leq \frac{ 2 \left(L + \frac{\lambda \sqrt{d} T}{2 \Vert w_1 - w_\star \Vert_2}\right) \Vert w_1 - w_\star \Vert^2_2}{T^2} 
+        + \frac{\lambda d 2 \Vert w_1 - w_\star \Vert_2}{2\sqrt{d} T} \\
+        &= \frac{2 L \Vert w_1 - w_\star \Vert^2_2}{T^2} 
+        + \frac{\frac{\lambda \sqrt{d} T}{\Vert w_1 - w_\star \Vert_2} \Vert w_1 - w_\star \Vert_2^2}{T^2} 
+        + \frac{\lambda \sqrt{d} \Vert w_1 - w_\star \Vert_2}{T} \\
+        &= \frac{2 L \Vert w_1 - w_\star \Vert^2_2}{T^2} 
+        + \frac{\lambda \sqrt{d} \Vert w_1 - w_\star \Vert_2^2}{T}
+        + \frac{\lambda \sqrt{d} \Vert w_1 - w_\star \Vert_2}{T} \\
+        &= \frac{2 L \Vert w_1 - w_\star \Vert^2_2}{T^2} 
+        + \frac{\lambda \sqrt{d} \Vert w_1 - w_\star \Vert_2 (\Vert w_1 - w_\star \Vert_2 + 1)}{T}
+    \end{align*}
 \end{solution}
 
+\section*{11}
+
+\begin{solution}
+    The rate of convergence of FISTA is shown as in the following image
+    \footnote{Sébastien Bubeck. \textit{Convex Optimization: Algorithms and Complexity}. Page 311.}:
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width = 0.8\textwidth]{FISTA.png}
+    \end{figure}
+
+    This means that the rate of convergence of FISTA is $O\left(\frac{1}{T^2}\right)$, 
+    however, in the previous problem $10$, we have proved that the rate of convergence of NAG is $O\left(\frac{1}{T}\right)$.
+
+    Therefore, regarding the rate of convergence, FISTA is better than NAG.
+    \bigskip
+    
+    In addition, from the resulting optimization error bound, 
+    we can see that there is $\sqrt{d}$ in the bound of NAG, 
+    which means that as the dimension $d$ increases, the performance to approximate $w_\star$ by $w_{T+1}$ will be worse.
+\end{solution}
 \end{document}
