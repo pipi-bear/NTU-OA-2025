@@ -288,8 +288,6 @@ and its equivalent condition (a-i) is also proved, and we have:
 
 \end{solution}
 
-\newpage
-
 
 Denote the Bregman divergence associated with $h$ as $D_h$, i.e.,
 
@@ -479,6 +477,193 @@ Combining (1) and (2), we have:
 
 \section*{4}
 
+\begin{solution}
+
+    We need to show that:
+
+    \begin{align*}
+        x_{t + 1}
+        &=
+        \begin{bmatrix}
+            1 \\
+            \vdots \\
+            1
+        \end{bmatrix} 
+        \oslash 
+        \left\{
+        \nabla f(x_t) + 
+        \begin{bmatrix}
+            \frac{1}{x_t[1]} \\
+            \vdots \\
+            \frac{1}{x_t[d]}
+        \end{bmatrix} 
+        + 
+        \begin{bmatrix}
+            \lambda \\
+            \vdots \\
+            \lambda
+        \end{bmatrix} 
+        \right\} \\
+        &=
+        \begin{bmatrix}
+            1 \\
+            \vdots \\
+            1
+        \end{bmatrix} 
+        \oslash 
+        \begin{bmatrix}
+            \frac{\nabla f(x_t)x_t[1] + 1 + \lambda x_t[1]}{x_t[1]} \\
+            \vdots \\
+            \frac{\nabla f(x_t)x_t[d] + 1 + \lambda x_t[d]}{x_t[d]}
+        \end{bmatrix} \\
+        &=
+        \begin{bmatrix}
+            \frac{x_t[1]}{\nabla f(x_t)x_t[1] + 1 + \lambda x_t[1]} \\
+            \vdots \\
+            \frac{x_t[d]}{\nabla f(x_t)x_t[d] + 1 + \lambda x_t[d]}
+        \end{bmatrix} \\
+        &= 
+        \begin{bmatrix}
+            \frac{1}{\nabla f(x_t) + \frac{1}{x_t[1]} + \lambda} \\
+            \vdots \\
+            \frac{1}{\nabla f(x_t) + \frac{1}{x_t[d]} + \lambda}
+        \end{bmatrix} \tag{*}
+    \end{align*}
+
+    By the updating rule, we have:
+
+    \begin{align*}
+        &x_{t + 1} 
+        \in
+        \arg\min_{x \in \Delta_d}
+        \left\{
+        \langle \nabla f(x_t), x - x_t \rangle + D_h(x, x_t)
+        \right\} \\
+        \rightarrow \ &
+        x_{t + 1} 
+        \in
+        \arg\min_{x \in \Delta_d}
+        \left\{
+        \langle \nabla f(x_t), x - x_t \rangle + h(x) - \left[ h(x_t) + \langle \nabla h(x_t), x - x_t \rangle \right]
+        \right\} \\
+        \rightarrow \ &
+        x_{t + 1} 
+        \in
+        \arg\min_{x \in \Delta_d}
+        \left\{
+        \langle \nabla f(x_t), x - x_t \rangle + h(x) - h(x_t) - \langle \nabla h(x_t), x - x_t \rangle \right\} \\
+        \rightarrow \ &
+        x_{t + 1} 
+        \in
+        \arg\min_{x \in \Delta_d}
+        \left\{
+        \langle \nabla f(x_t), x - x_t \rangle + h(x) - h(x_t) - \langle \nabla h(x_t), x \rangle + \langle \nabla h(x_t), x_t \rangle \right\} \tag{1}
+    \end{align*}
+
+    Recall we previously derived that:
+
+    \begin{align*}
+        \nabla h(x_t) 
+        = \begin{bmatrix}
+            -\frac{1}{x_t[1]} \\
+            -\frac{1}{x_t[2]} \\
+            \vdots \\
+            -\frac{1}{x_t[d]}
+        \end{bmatrix}
+        % ,\quad
+        % \nabla f(x_t) 
+        % = -\sum_{i=1}^n w_i \frac{a_i}{\langle a_i, x_t \rangle}
+    \end{align*}
+
+    So:
+
+    \begin{align*}
+        \langle \nabla h(x_t), x_t \rangle
+        = \left[ -\frac{1}{x_t[1]} \cdots -\frac{1}{x_t[d]} \right]
+        \begin{bmatrix}
+            x_t[1] \\
+            \vdots \\
+            x_t[d]
+        \end{bmatrix}
+        = - \sum_{i = 1}^d \frac{1}{x_t[i]} x_t[i] = -d
+    \end{align*}
+
+    Plugging this into $(1)$, we have:
+    
+    \begin{align*}
+        x_{t + 1} 
+        \in
+        \arg\min_{x \in \Delta_d}
+        \left\{
+        \langle \nabla f(x_t), x \textcolor{Green}{- x_t} \rangle + h(x) \textcolor{Green}{- h(x_t)} - \langle \nabla h(x_t), x \rangle \textcolor{Green}{- d} \right\}
+    \end{align*}
+
+    (Similarly, $\langle \nabla f(x_t), x_t \rangle$ would also be a constant.)
+    \bigskip
+
+    Since we need to find the $x$ that gives the minimum, we can drop the terms that are constant or independent of $x$ (the Green terms), 
+    so we have:
+
+    \begin{align*}
+        x_{t + 1} 
+        \in
+        \arg\min_{x \in \Delta_d}
+        \left\{
+        \langle \nabla f(x_t), x \rangle + h(x) - \langle \nabla h(x_t), x \rangle \right\}
+    \end{align*}
+
+    Combining the inner product terms, we have:
+
+    \begin{align*}
+        x_{t + 1} 
+        \in
+        \arg\min_{x \in \Delta_d}
+        \left\{
+        \langle \nabla f(x_t) - \nabla h(x_t), x \rangle + h(x) \right\}
+    \end{align*}
+
+    Expand this equation by what we previously derived:
+
+    \begin{align*}
+        \nabla h(x_t) &= \begin{bmatrix}
+            -\frac{1}{x_t[1]} \\
+            -\frac{1}{x_t[2]} \\
+            \vdots \\
+            -\frac{1}{x_t[d]}
+        \end{bmatrix} \\
+        h(x) &= -\sum_{i=1}^d \log x[i]
+    \end{align*}
+
+    we have:
+
+    \begin{align*}
+        x_{t + 1} 
+        \in
+        \arg\min_{x \in \Delta_d} \sum_{i=1}^d \left( \nabla f(x_t)[i] + \frac{1}{x_t[i]} \right) x[i] - \sum_{i=1}^d \log x[i]
+    \end{align*}
+    
+    In order to deal with the constraint $x \in \Delta_d$, we can use Lagrange multiplier $\lambda$ and write the Lagrangian as:
+
+    \begin{align*}
+        L(x, \lambda) = \sum_{i=1}^d \left( \nabla f(x_t)[i] + \frac{1}{x_t[i]} \right) x[i] - \sum_{i=1}^d \log x[i] + \lambda \left( \sum_{i=1}^d x[i] - 1 \right)
+    \end{align*}
+
+    Then taking the derivative w.r.t. $x[i]$ and set the result to $0$ to find the optimal $x$, we have:
+
+    \begin{align*}
+        \frac{\partial L}{\partial x[i]} = \nabla f(x_t)[i] + \frac{1}{x_t[i]} - \frac{1}{x[i]} + \lambda = 0
+    \end{align*}
+
+    Rearrange to solve for $x[i]$, we have:
+
+    \begin{align*}
+        &\frac{1}{x[i]} = \nabla f(x_t)[i] + \frac{1}{x_t[i]} + \lambda \\
+        \rightarrow \ &x[i] = \frac{1}{\nabla f(x_t)[i] + \frac{1}{x_t[i]} + \lambda}
+    \end{align*}
+
+    And this matches with $(*)$, which is the given updating rule.
+\end{solution}
+
 \section*{5}
 
 We need to show that the following function is self-concordant:
@@ -622,8 +807,6 @@ we can directly use the following definition
 
 \end{claimproof}
 \end{solution}
-
-\newpage
 
 % Considering the given condition for learning a linear classifier, with data:
 
@@ -990,6 +1173,22 @@ We need to further prove that $g_\mu$ is $\frac{1}{\mu}$-smooth.
     \end{claimproof}
 \end{solution}
 
+\section*{8}
 
+We're asked to show that:
+
+\begin{align*}
+    g_\mu(w) \leq g(w) \leq g_\mu(w) + \frac{\mu d}{2} 
+\end{align*}
+
+\begin{solution}
+
+    Since $g(w)$ is defined as $\Vert w \Vert_1$, it is equivalent to show that:
+
+    \begin{align*}
+        g_\mu(w) \leq \Vert w \Vert_1  = \sum_{i=1}^d \vert w[i] \vert \leq g_\mu(w) + \frac{\mu d}{2} 
+    \end{align*} 
+
+\end{solution}
 
 \end{document}
