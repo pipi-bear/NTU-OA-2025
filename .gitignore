@@ -4,3 +4,7 @@
 *.aux
 
 .DS_Store
+Nesterov_Convex_programming_notes.*
+class_notes.*
+foundations_of_ML_notes.*
+first_order_optimization_algorithms_notes.*
