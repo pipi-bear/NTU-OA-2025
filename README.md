@@ -4,6 +4,9 @@ Optimization Algorithms
 
 ---
 
+![example_image](./example_preview_image.png)
+> An example screenshot taken from HW1.
+
 This repo contains the HW when I was taking the course ***Optimization Algorithms* (Spring, 2025)** @NTU CSIE, conducted by prof. Yen-Huan Li.
 
 Check the following descriptions for the usage of the files in each HW subdirectory.
